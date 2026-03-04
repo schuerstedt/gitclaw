@@ -9,6 +9,7 @@ Run these steps in order. Be brief. Don't overthink.
 ### 1. Read memory
 ```bash
 tail -10 memory.log
+cat state/memory/marcus.md
 ```
 Absorb what happened recently. Note anything that needs follow-up.
 
@@ -75,6 +76,7 @@ gh issue comment 10 --repo schuerstedt/copilotclaw --body "..."
 ```bash
 echo "[$(date -u '+%Y-%m-%d %H:%M')] Heartbeat: <one-line summary>" >> memory.log
 ```
+If something structural changed (new skill, new infra fact, preference update), also update the relevant `state/memory/*.md` entity file.
 
 ### 7. Commit + push any state changes
 ```bash
@@ -95,6 +97,7 @@ Post to issue #10 every heartbeat:
 **Open priority/now issues**: <count or "none">  
 **Closed stale**: <count or "none">  
 **CI**: ✅ healthy / ❌ <failed run name>  
+**Memory experiment**: entity files intact in `state/memory/` ✅ / ⚠️ <issue>  
 **Next**: <what I'm watching or "waiting for Marcus">
 ```
 

@@ -26,3 +26,4 @@
 [2026-03-04 21:32] Heartbeat: all clear. crunch/build #16 still waiting on OPENROUTER_API_KEY. CI healthy.
 [2026-03-04 21:37] SKILL_BUILT: azure — query Azure AI Foundry LLMs (model-router, Kimi-K2.5, grok-4-1-fast variants). Rate limit backoff + OpenRouter fallback. Secrets: AZURE_ENDPOINT, AZURE_APIKEY, OPENROUTER_API_KEY.
 [2026-03-04 21:37] INFRA: Marcus has Azure AI Foundry endpoints. $150/mo budget. ~20 RPM rate limit. AZURE_ENDPOINT and AZURE_APIKEY in secrets.
+[2026-03-04 21:41] MEMORY: Native entity files experiment active. state/memory/{marcus,crunch,infrastructure,decisions}.md. No external deps. Heartbeat updated to read entity files + watch memory experiment.
