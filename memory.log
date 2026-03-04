@@ -32,3 +32,4 @@
 [2026-03-04 22:11] INFRA: Grok rate limits — 50,000 TPM, 50 RPM. Much better than other Azure models (~20 RPM). Low pricing too. Use grok-4-1-fast-non-reasoning as default for all LLM work via azure skill. Kimi endpoint is flaky (content=None issues), skip it.
 [2026-03-04 22:31] Heartbeat: labeled+closed #9,#12,#20,#21,#22. Engaged with #19 (meaning/Frankl). Wrote purpose.md. Spawned #23 (auto-labeling build).
 [2026-03-04 22:31] Noticed: feat/experimental-mindset branch unmerged. Has Experimental Mindset section for AGENTS.md. Pinged Marcus on #11.
+[2026-03-04 22:39] LABEL: crunch/done replaced by crunch/review. No more auto-close. Heartbeat pings after 7d idle in review instead. crunch/done deprecated.
