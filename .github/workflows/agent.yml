@@ -58,6 +58,8 @@ jobs:
           BILLING_PAT: ${{ secrets.COPILOT_PAT }}   # ← add this line
           COPILOT_ALLOW_ALL: "true"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AZURE_ENDPOINT: ${{ secrets.AZURE_ENDPOINT }}
+          AZURE_APIKEY: ${{ secrets.AZURE_APIKEY }}
         run: |
           set -euo pipefail
           ISSUE_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
