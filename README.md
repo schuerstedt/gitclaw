@@ -1,4 +1,4 @@
-![gitclaw banner](banner.jpeg)
+![copilotclaw banner](banner.jpeg)
 
 A personal AI assistant that runs entirely through GitHub Issues and Actions. Like [OpenClaw](https://github.com/openclaw/openclaw), but no servers or extra infrastructure.
 
@@ -51,7 +51,7 @@ Since everything is in git, it survives across ephemeral runners and is fully ve
 
 The workflow only responds to repository **owners, members, and collaborators**. Random users cannot trigger the agent on public repos.
 
-If you plan to use gitclaw for anything private, **make the repo private**. Public repos mean your conversation history is visible to everyone, but get generous GitHub Actions usage.
+If you plan to use copilotclaw for anything private, **make the repo private**. Public repos mean your conversation history is visible to everyone, but get generous GitHub Actions usage.
 
 ## Configuration
 
@@ -65,4 +65,4 @@ Everything lives in `.github/workflows/agent.yml` — no separate scripts. Commo
 
 ## Acknowledgments
 
-Forked from [gitclaw](https://github.com/schuerstedt/gitclaw) and rebuilt as a Copilot-native agent. Original project built on top of [pi-mono](https://github.com/badlogic/pi-mono) by [Mario Zechner](https://github.com/badlogic). Now powered by [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli).
+Forked from [gitclaw](https://github.com/schuerstedt/gitclaw) by [@schuerstedt](https://github.com/schuerstedt) and rebuilt as a Copilot-native agent — now living as [copilotclaw](https://github.com/schuerstedt/copilotclaw). Original project built on top of [pi-mono](https://github.com/badlogic/pi-mono) by [Mario Zechner](https://github.com/badlogic). Now powered by [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli).
