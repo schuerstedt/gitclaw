@@ -2,15 +2,16 @@
 
 A personal AI assistant that runs entirely through GitHub Issues and Actions. Like [OpenClaw](https://github.com/openclaw/openclaw), but no servers or extra infrastructure.
 
-Powered by the [pi coding agent](https://github.com/badlogic/pi-mono). Every issue becomes a chat thread with an AI agent. Conversation history is committed to git, giving the agent long-term memory across sessions. It can search prior context, edit or summarize past conversations, and all changes are versioned.
+Powered by [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli). Every issue becomes a chat thread with an AI agent — but more than that, the agent can **write new skills for itself**, update its own instructions, and commit them back to the repo. Future sessions inherit everything it commits. The assistant evolves as you use it.
 
-Since the agent can read and write files, you can build an evolving software project that updates itself as you open issues. Try asking it to set up a GitHub Pages site, then iterate on it issue by issue.
+Conversation history is committed to git, giving the agent long-term memory across sessions. It maintains a `memory.log`, a user profile, and can grow its own capabilities over time.
 
 ## How it works
 
 1. **Create an issue** → the agent processes your request and replies as a comment.
 2. **Comment on the issue** → the agent resumes the same session with full prior context.
-3. **Everything is committed** → sessions and changes are pushed to the repo after every turn.
+3. **Everything is committed** → sessions, memory, and any file changes are pushed after every turn.
+4. **The agent can extend itself** → it can write new skills, update `AGENTS.md`, and commit them so future sessions are smarter.
 
 The agent reacts with 👀 while working and removes it when done.
 
@@ -19,21 +20,32 @@ The agent reacts with 👀 while working and removes it when done.
 All state lives in the repo:
 
 ```
+AGENTS.md                   # agent identity + behavioral instructions (auto-loaded)
+memory.log                  # append-only log of facts across all sessions
 state/
+  user.md                   # user profile (name, preferences)
   issues/
-    1.json          # maps issue #1 -> its session file
-  sessions/
-    2026-02-04T..._abc123.jsonl    # full conversation for issue #1
+    1.json                  # maps issue #1 -> its Copilot CLI session ID
+  copilot/
+    sessions/
+      <id>/                 # full session context for issue #1
+.github/
+  skills/
+    bootstrap/SKILL.md      # first-run identity bootstrap
+    write-skill/SKILL.md    # meta-skill: how to create new skills
+    remember/SKILL.md       # how to write to memory.log
+    <anything>/SKILL.md     # skills the agent writes for itself over time
 ```
 
-Since sessions are in git, the agent can grep its own history and edit or summarize past conversations.
+Since everything is in git, it survives across ephemeral runners and is fully version-controlled.
 
 ## Setup
 
 1. **Fork this repo**
-2. **Add your Anthropic API key** - go to **Settings → Secrets and variables → Actions** and create a secret named `ANTHROPIC_API_KEY`.
-3. **Open an issue** - the agent starts automatically.
-4. **Comment on the issue** - the agent resumes where it left off.
+2. **Create a fine-grained PAT** - go to **Settings → Developer settings → Personal access tokens → Fine-grained tokens** and create a token with the **Copilot Requests** permission. (Requires an active GitHub Copilot subscription — available on all plans.)
+3. **Add the PAT as a secret** - go to your fork's **Settings → Secrets and variables → Actions** and create a secret named `COPILOT_PAT`.
+4. **Hatch the agent** - open an issue titled anything (e.g. "Hello") and add the **`hatch`** label. The agent will introduce itself, ask about you, and write its own identity into the repo.
+5. **Use it** - every subsequent issue is a task or conversation. The agent remembers everything across sessions.
 
 ## Security
 
@@ -43,15 +55,16 @@ If you plan to use gitclaw for anything private, **make the repo private**. Publ
 
 ## Configuration
 
-Edit `.github/workflows/agent.yml` to customize:
+Everything lives in `.github/workflows/agent.yml` — no separate scripts. Common tweaks:
 
-- **Model:** Add `--provider` and `--model` flags to the `bunx pi` command.
-- **Tools:** Restrict with `--tools read,grep,find,ls` for read-only analysis.
-- **Thinking:** Add `--thinking high` for harder tasks.
+- **Model:** Add `--model MODEL` to the `copilot` invocation in the **Run agent** step (e.g. `--model claude-sonnet-4-5`).
+- **Tools:** Restrict with `--available-tools read,grep,glob` for read-only analysis.
+- **Reasoning:** Add `--experimental` and set `reasoning_effort` in `.copilot/settings.json`.
 - **Trigger:** Adjust the `on:` block to filter by labels, assignees, etc.
+- **AGENTS.md:** Already loaded automatically as custom instructions for the agent.
 
 ## Acknowledgments
 
-Built on top of [pi-mono](https://github.com/badlogic/pi-mono) by [Mario Zechner](https://github.com/badlogic).
+Originally built on top of [pi-mono](https://github.com/badlogic/pi-mono) by [Mario Zechner](https://github.com/badlogic). Now powered by [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli).
 
 Thanks to [ymichael](https://github.com/ymichael) for nerdsniping me with the idea of an agent that runs in GitHub Actions.

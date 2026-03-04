@@ -28,21 +28,124 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Preinstall
+      - name: Add eyes reaction
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bun lifecycle/preinstall.ts
+        run: |
+          ISSUE_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
+          if [ "$GITHUB_EVENT_NAME" = "issue_comment" ]; then
+            COMMENT_ID=$(jq -r '.comment.id' "$GITHUB_EVENT_PATH")
+            REACTION_ID=$(gh api "repos/$GITHUB_REPOSITORY/issues/comments/$COMMENT_ID/reactions" \
+              -f content=eyes --jq '.id')
+            printf 'reaction_target=comment\nreaction_id=%s\ncomment_id=%s\n' \
+              "$REACTION_ID" "$COMMENT_ID" > /tmp/reaction-state.env
+          else
+            REACTION_ID=$(gh api "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER/reactions" \
+              -f content=eyes --jq '.id')
+            printf 'reaction_target=issue\nreaction_id=%s\n' \
+              "$REACTION_ID" > /tmp/reaction-state.env
+          fi
 
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
+      - name: Install Copilot CLI
+        run: npm install -g @github/copilot
 
-      - name: Run
+      - name: Run agent
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Fine-grained PAT with "Copilot Requests" permission
+          # https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli#authenticating-with-a-personal-access-token
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }}
+          COPILOT_ALLOW_ALL: "true"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bun lifecycle/main.ts
+        run: |
+          set -euo pipefail
+          ISSUE_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
+
+          # Fetch issue
+          TITLE=$(gh issue view "$ISSUE_NUMBER" --json title --jq '.title')
+          BODY=$(gh issue view "$ISSUE_NUMBER" --json body --jq '.body')
+
+          # Resolve session
+          mkdir -p state/issues state/copilot
+          MAPPING_FILE="state/issues/${ISSUE_NUMBER}.json"
+          SESSION_ID=""
+          if [ -f "$MAPPING_FILE" ]; then
+            SESSION_ID=$(jq -r '.sessionId // empty' "$MAPPING_FILE")
+            if [ -n "$SESSION_ID" ]; then
+              echo "Resuming session: $SESSION_ID"
+            else
+              echo "No session ID in mapping, starting fresh"
+            fi
+          else
+            echo "No session mapping found, starting fresh"
+          fi
+
+          # Configure git
+          git config user.name "gitclaw[bot]"
+          git config user.email "gitclaw[bot]@users.noreply.github.com"
+
+          # Build prompt
+          if [ "$GITHUB_EVENT_NAME" = "issue_comment" ]; then
+            PROMPT=$(jq -r '.comment.body' "$GITHUB_EVENT_PATH")
+          else
+            PROMPT=$(printf '%s\n\n%s' "$TITLE" "$BODY")
+          fi
+
+          # Run agent
+          touch /tmp/copilot-run-start
+          COPILOT_ARGS=(copilot --allow-all -s -p "$PROMPT")
+          if [ -n "$SESSION_ID" ]; then
+            COPILOT_ARGS+=(--resume "$SESSION_ID")
+          fi
+          AGENT_TEXT=$(XDG_STATE_HOME=./state/copilot "${COPILOT_ARGS[@]}" 2>/dev/null)
+
+          # Discover session ID for new sessions
+          if [ -z "$SESSION_ID" ]; then
+            NEWEST_PATH=$(find ./state/copilot -mindepth 2 -maxdepth 2 -type d \
+              -newer /tmp/copilot-run-start 2>/dev/null | head -1)
+            if [ -n "$NEWEST_PATH" ]; then
+              SESSION_ID=$(basename "$NEWEST_PATH")
+              echo "New session ID: $SESSION_ID"
+            else
+              echo "Warning: could not determine session ID"
+            fi
+          fi
+
+          # Save session mapping
+          if [ -n "$SESSION_ID" ]; then
+            jq -n --argjson n "$ISSUE_NUMBER" --arg id "$SESSION_ID" \
+              --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+              '{issueNumber: $n, sessionId: $id, updatedAt: $ts}' > "$MAPPING_FILE"
+            echo "Saved mapping: issue #$ISSUE_NUMBER -> $SESSION_ID"
+          fi
+
+          # Commit and push
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "gitclaw: work on issue #$ISSUE_NUMBER"
+          fi
+          for i in 1 2 3; do
+            if git push origin main; then break; fi
+            echo "Push failed, rebasing and retrying ($i/3)..."
+            git pull --rebase origin main
+          done
+
+          # Comment on issue
+          printf '%s' "$AGENT_TEXT" | head -c 60000 > /tmp/agent-response.txt
+          gh issue comment "$ISSUE_NUMBER" --body-file /tmp/agent-response.txt
+
+      - name: Remove eyes reaction
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          [ -f /tmp/reaction-state.env ] || exit 0
+          # shellcheck disable=SC1091
+          source /tmp/reaction-state.env
+          ISSUE_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
+          if [ "$reaction_target" = "comment" ]; then
+            gh api "repos/$GITHUB_REPOSITORY/issues/comments/${comment_id}/reactions/${reaction_id}" \
+              -X DELETE || true
+          else
+            gh api "repos/$GITHUB_REPOSITORY/issues/${ISSUE_NUMBER}/reactions/${reaction_id}" \
+              -X DELETE || true
+          fi

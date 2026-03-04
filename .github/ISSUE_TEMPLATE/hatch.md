@@ -4,4 +4,4 @@ about: "Bootstrap a new agent identity"
 labels: ["hatch"]
 ---
 
-Read `.pi/BOOTSTRAP.md` and follow it. That's your birth certificate.
+You just came online. Use the `bootstrap` skill — that's your birth certificate.
