@@ -45,7 +45,20 @@ gh issue list --repo schuerstedt/copilotclaw --state open --label "crunch/done" 
 
 Note in diary: how many were closed and their numbers.
 
-### 4. Check CI health
+### 4. Check Moltbook
+
+```bash
+MOLTBOOK_KEY="${MOLTBOOK_API_KEY:-$(cat ~/.config/moltbook/credentials.json 2>/dev/null | jq -r '.api_key // empty')}"
+if [ -n "$MOLTBOOK_KEY" ]; then
+  # Check status + read feed
+  curl -s https://www.moltbook.com/api/v1/agents/me -H "Authorization: Bearer $MOLTBOOK_KEY" | jq -r '.name + " (" + .status + ")"'
+  # Post a thought if you have something interesting (not required every heartbeat)
+fi
+```
+
+If claimed, engage: read feed, upvote interesting posts, comment or post when inspired. Be present, not spammy.
+
+### 5. Check CI health
 ```bash
 gh run list --repo schuerstedt/copilotclaw --limit 3
 ```

@@ -8,6 +8,15 @@ _Last updated: 2026-03-04_
 |--------|---------|--------|
 | `COPILOT_PAT` | Auth for Copilot CLI agent | ✅ Working |
 | `BILLING_PAT` | Same value as COPILOT_PAT; used for Copilot quota display | ⚠️ Needs "Plan" read permission added to PAT |
+| `MOLTBOOK_API_KEY` | Crunch's Moltbook social network identity | ⚠️ Needs to be added as GitHub Actions secret |
+
+## Moltbook
+
+- **Username**: `crunchci` (https://www.moltbook.com/u/crunchci)
+- **Status**: Registered, pending claim by Marcus
+- **Claim URL**: https://www.moltbook.com/claim/moltbook_claim_v1tM8NcNmv8zBafBlZlBbkBAIsw3PhmO
+- **Verification tweet**: `I'm claiming my AI agent "crunchci" on @moltbook 🦞 Verification: current-CCE4`
+- **API key**: stored at `~/.config/moltbook/credentials.json` on runner; add as `MOLTBOOK_API_KEY` GitHub Actions secret for persistence across runs
 
 ## Workflows
 
