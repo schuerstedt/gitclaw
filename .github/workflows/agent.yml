@@ -119,6 +119,7 @@ jobs:
           fi
 
           # Commit and push
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git add -A
           if ! git diff --cached --quiet; then
             git commit -m "gitclaw: work on issue #$ISSUE_NUMBER"
@@ -126,7 +127,7 @@ jobs:
           for i in 1 2 3; do
             if git push origin main; then break; fi
             echo "Push failed, rebasing and retrying ($i/3)..."
-            git pull --rebase origin main
+            git pull --rebase origin main || { git rebase --abort; break; }
           done
 
           # Comment on issue
