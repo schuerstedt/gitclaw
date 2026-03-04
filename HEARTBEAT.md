@@ -115,6 +115,15 @@ bash .github/scripts/auto-label-issues.sh
 This handles: `crunch/build`, `crunch/proposal`, `crunch/research`, `crunch/watch`, `crunch/discuss`.
 Skips structural issues #10 and #11. Runs on every heartbeat.
 
+### Regenerate GitHub Pages
+
+**Always run this on every heartbeat** — it updates the live site at https://schuerstedt.github.io/copilotclaw/ with fresh data:
+```bash
+bash .github/scripts/generate-page.sh
+```
+
+This regenerates `index.html` with the current timestamp, latest memory log entries, open issues, skill list, and a random vibe quote. The page is committed and pushed along with the rest of the heartbeat state, which triggers the `static.yml` deploy workflow automatically.
+
 ---
 
 ## Step 4 — Report
