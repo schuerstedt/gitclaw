@@ -12,7 +12,7 @@ Append this footer to **every response** in the session. Keep it compact — one
 
 ```
 ---
-📊 **Session** | premium: N calls (models used) | free: N calls | 🏃 **Last CI runs**: ✅ 14:09 3m9s · ✅ 14:05 44s · ❌ 13:52 18s
+📊 **Session** | premium: N calls (models) | free: N | standard: N | 🎟️ **Copilot**: 47/300 (15%) | 🏃 **CI**: ✅ 14:09 3m9s · ✅ 14:05 44s
 ```
 
 ## How to populate it
@@ -27,14 +27,23 @@ FROM model_calls GROUP BY tier;
 
 If the table is empty (session just started), show `0 calls` for each tier.
 
+### Copilot premium request quota
+Run the bundled script — reads GitHub billing API using `BILLING_PAT` env var:
+
+```bash
+bash .github/skills/session-stats/scripts/premium-usage.sh schuerstedt
+```
+
+Output: `47 / 300 requests (15%)` or `unavailable` or `no BILLING_PAT — see AGENTS.md setup`
+
+**Setup required**: `COPILOT_PAT` must have "Plan" user permission (read) — see AGENTS.md.
+
 ### CI run times
-Run the bundled script (last 5 runs, one-liner format):
+Run the bundled script (last 3 runs):
 
 ```bash
 bash .github/skills/session-stats/scripts/ci-stats.sh 3
 ```
-
-Output example: `✅ 2026-03-04T14:09  3m 9s`
 
 Condense to inline: `✅ 14:09 3m9s · ✅ 14:05 44s · ❌ 13:52 18s`
 
@@ -53,4 +62,5 @@ Before every `task` tool call, insert into `model_calls`:
 INSERT INTO model_calls (model, tier) VALUES ('gpt-4.1', 'free');
 ```
 
-The *current session model* (me, Claude Sonnet 4.6) counts as **1 premium call per user message** — insert it on first tool use each turn.
+Count me (Claude Sonnet 4.6) as **1 premium call per user turn** — insert on first tool use each turn.
+
