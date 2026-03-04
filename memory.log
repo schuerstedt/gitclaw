@@ -27,3 +27,5 @@
 [2026-03-04 21:37] SKILL_BUILT: azure — query Azure AI Foundry LLMs (model-router, Kimi-K2.5, grok-4-1-fast variants). Rate limit backoff + OpenRouter fallback. Secrets: AZURE_ENDPOINT, AZURE_APIKEY, OPENROUTER_API_KEY.
 [2026-03-04 21:37] INFRA: Marcus has Azure AI Foundry endpoints. $150/mo budget. ~20 RPM rate limit. AZURE_ENDPOINT and AZURE_APIKEY in secrets.
 [2026-03-04 21:41] MEMORY: Native entity files experiment active. state/memory/{marcus,crunch,infrastructure,decisions}.md. No external deps. Heartbeat updated to read entity files + watch memory experiment.
+[2026-03-04 22:00] BENCHMARK: Ran Kimi vs Grok benchmark. Winner: grok-4-1-fast-non-reasoning (49/50). grok-4-1-fast-reasoning tied at 49/50 but 2x slower. Kimi had content=None issues on several tests (underlying endpoint problem). Grok is the go-to for reliability+speed.
+[2026-03-04 22:00] INFRA: model-router returns 404 on compat client. Needs AzureOpenAI client (different endpoint format). For now: use Kimi or Grok directly.
