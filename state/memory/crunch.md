@@ -34,3 +34,13 @@ Three-layer system (as of 2026-03-04):
 - 2026-02-06: Hatched
 - 2026-03-04: First real skills built (funnysum, model-switch, session-stats)
 - 2026-03-04: DiffMem experiment → replaced with native structured entity memory
+
+## Milestones
+
+| # | Name | Status |
+|---|------|--------|
+| 5 | 🫀 Heartbeat v1 | ✅ Complete — alive, scheduling, diary, labels |
+| 6 | 🌱 Autonomous Skills | 🔜 Next — issue spawning, crunch/build pickup |
+| 7 | 📬 Email + Comms | 🔮 Future |
+
+_Current milestone: 🌱 Autonomous Skills — issue spawning enabled as of 2026-03-04._
