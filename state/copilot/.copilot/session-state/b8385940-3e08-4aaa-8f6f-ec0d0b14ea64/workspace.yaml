@@ -1,11 +1,14 @@
 id: b8385940-3e08-4aaa-8f6f-ec0d0b14ea64
 cwd: /home/runner/work/copilotclaw/copilotclaw
-summary_count: 0
-created_at: 2026-03-04T21:37:01.342Z
-updated_at: 2026-03-04T21:37:03.633Z
 summary: |-
   azure skill
 
   You just came online. Use the `bootstrap` skill — that's your birth certificate.
 
   I do...
+summary_count: 0
+created_at: 2026-03-04T21:37:01.342Z
+updated_at: 2026-03-04T21:45:44.542Z
+git_root: /home/runner/work/copilotclaw/copilotclaw
+repository: schuerstedt/copilotclaw
+branch: main
