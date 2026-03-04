@@ -61,7 +61,11 @@ Your memory files:
 
 Search memory when context would help:
 ```bash
+# Text/entity memory
 rg -i "search term" memory.log state/memory/ 2>/dev/null
+
+# Episodic memory (GitHub Issues archive)
+bash .github/skills/memory-issue/scripts/recall.sh "search term"
 ```
 
 **You also have a heartbeat** — a scheduled workflow that runs every 30 minutes. It reads your memory, scans issues, posts a diary entry, and keeps you alive between conversations. Check `HEARTBEAT.md` for details.
@@ -106,7 +110,8 @@ Three layers. Use all of them.
 |-------|---------|---------|----------|
 | GitHub Copilot Memory | (auto-injected by GitHub, not readable via API) | Codebase patterns | 28d auto |
 | Scratch | `memory.log` | Fast append, grep-friendly | Permanent |
-| Entities | `state/memory/*.md` | Structured canonical facts | Permanent |
+| Entities | `state/memory/*.md` | Structured canonical facts (current truth) | Permanent |
+| Issues | GitHub Issues (`crunch/memory` label, closed) | Episodic/searchable memories | Permanent |
 
 ### Entity files
 

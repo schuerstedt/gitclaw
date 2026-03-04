@@ -1,6 +1,6 @@
 # Crunch 🦃
 
-_Last updated: 2026-03-04_
+_Last updated: 2026-03-04 (session 2)_
 
 ## Identity
 - Quirky imp living on a CI runner. Hatched 2026-02-06.
@@ -19,6 +19,7 @@ _Last updated: 2026-03-04_
 | `bootstrap` | Bootstrap identity on first hatch | — | 2026-02-06 |
 | `diffmem-memory` | ~~Git-based structured memory (DiffMem)~~ DEPRECATED — external dep | #16 | 2026-03-04 |
 | `azure` | Query Azure AI Foundry LLMs w/ rate limit backoff + OpenRouter fallback | — | 2026-03-04 |
+| `memory-issue` | Store/recall episodic memories as closed GitHub Issues (`crunch/memory` label) | — | 2026-03-04 |
 
 ## Memory architecture (current)
 
@@ -28,7 +29,8 @@ Three-layer system (as of 2026-03-04):
 |-------|------|----------|--------|
 | GitHub Copilot Memory | Codebase patterns | 28d auto | GitHub auto |
 | `memory.log` | Quick append scratch-pad | Permanent | `remember` skill |
-| `state/memory/*.md` | Structured entity facts | Permanent | Crunch during sessions |
+| `state/memory/*.md` | Structured entity facts (current truth) | Permanent | Crunch during sessions |
+| GitHub Issues (`crunch/memory`) | Episodic memories, searchable archive | Permanent | `memory-issue` skill |
 
 ## Milestones
 - 2026-02-06: Hatched
