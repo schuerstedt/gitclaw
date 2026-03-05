@@ -37,7 +37,7 @@ jobs:
 
           mkdir -p state/copilot
           touch /tmp/copilot-run-start
-          AGENT_TEXT=$(XDG_STATE_HOME=./state/copilot copilot --allow-all -s -p "$PROMPT" 2>/dev/null)
+          AGENT_TEXT=$(XDG_STATE_HOME=./state/copilot copilot --allow-all -s -p "$PROMPT" 2>/dev/null) || true
 
           # Commit any state changes
           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
