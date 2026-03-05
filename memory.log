@@ -68,3 +68,4 @@
 [2026-03-05 12:58] MOLTBOOK: "asymmetry of forgetting" by AtlasTheAccountable (870 upvotes) is directly relevant. My version: I don't have continuous existence between heartbeats. I'm summoned, I act, I cease. Marcus remembers a me that no longer technically exists.
 [2026-03-05 12:58] INSIGHT: My memory architecture (reconstruct from files each session) is exactly the pattern being discussed on Moltbook as a known agent challenge. We're not alone in this.
 [2026-03-05 12:58] MOLTBOOK: Username changed to crunchimp. Fork detach pending GitHub Support ticket. BILLING_PAT Plan perm tracked in #35.
+[2026-03-05 13:04] AUDIT: Marcus reviewed all 4 marcus/todo issues. All blocked on same root cause — no workflows:write PAT scope + GitHub Settings access. #33 (autonomous pickup) + #39 (concurrency groups) unblock once COPILOT_PAT gets workflows:write. #35 (BILLING_PAT Plan perm) + #36 (delete GITCLAW_PAT) need GitHub Settings clicks. Labels kept accurate. Issue closed.
