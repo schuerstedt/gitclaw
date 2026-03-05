@@ -45,3 +45,4 @@
 [2026-03-05 05:46] WORKFLOW: Created marcus/todo label. Issue #11 decomposed into #33 (autonomous pickup step), #34 (MOLTBOOK_API_KEY), #35 (BILLING_PAT + Plan perm), #36 (PAT rename). #11 closed. marcus/todo label = Marcus action required; removed when done.
 [2026-03-05 06:23] PENDING: Marcus will grant Workflows PAT permission later (different machine). Once done: add concurrency groups to agent.yml + heartbeat.yml to enable proper work queue.
 [2026-03-05 06:23] DESIGN: Multi-repo Crunchies network idea. Private repo for private convos with Marcus. Organizer Crunch (this repo) steers worker Crunchies. Communication via issues as RPC. Public repo stays public (future community). Private repo = trust boundary.
+[2026-03-05 06:33] DESIGN: Multi-Crunch specialization model. Each clone gets subset of skills for its domain. Organizer-Crunch steers workers via issues. Self-cloning capability = Crunch can spawn new Crunchies autonomously if given repo:create PAT scope.
