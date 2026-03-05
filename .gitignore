@@ -1,2 +1,5 @@
 node_modules/
 .DS_Store
+
+# Copilot CLI session state — contains raw tool outputs including env vars/secrets
+state/copilot/.copilot/
