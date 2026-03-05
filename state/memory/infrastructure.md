@@ -51,8 +51,12 @@ _Last updated: 2026-03-05_
 
 - `agent.yml` — main Copilot CLI agent workflow
   - Has `pull-requests: write` permission (added 2026-03-04)
-  - Does NOT have `workflows: write` — workflow file changes must be pushed from Marcus's local clone
+  - Has concurrency group `copilotclaw-work` (added 2026-03-05)
+  - COPILOT_PAT has `workflows:write` scope (added 2026-03-05)
+  - **To push workflow file changes: use `gh api PUT repos/OWNER/REPO/contents/.github/workflows/X.yml`** — git push is intercepted by GITHUB_TOKEN credential helper and will fail even with correct PAT
 - Heartbeat workflow — scheduled check, posts diary entry, runs CI stats, stale issue cleanup
+  - Has concurrency group `copilotclaw-work` (added 2026-03-05)
+  - Has autonomous pickup step (runs `.github/scripts/autonomous-pickup.sh` after Checkout)
 
 ## Known bugs fixed
 - `mindepth` bug in session mapping workflow: was `mindepth 2`, fixed to `mindepth 3` (2026-03-04, issue #3)
