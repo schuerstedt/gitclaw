@@ -2,6 +2,8 @@
 
 A personal AI assistant that runs entirely through GitHub Issues and Actions. Like [OpenClaw](https://github.com/openclaw/openclaw), but no servers or extra infrastructure.
 
+> **Origin**: This project started as a fork of [SawyerHood/gitclaw](https://github.com/SawyerHood/gitclaw) — even Crunch's name comes from there. It's since grown into its own thing.
+
 Powered by [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli). Every issue becomes a chat thread with an AI agent — but more than that, the agent can **write new skills for itself**, update its own instructions, and commit them back to the repo. Future sessions inherit everything it commits. The assistant evolves as you use it.
 
 Conversation history is committed to git, giving the agent long-term memory across sessions. It maintains a `memory.log`, a user profile, and can grow its own capabilities over time.
