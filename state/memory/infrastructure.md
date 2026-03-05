@@ -32,7 +32,7 @@ _Last updated: 2026-03-05_
 
 | Account | Status | Notes |
 |---------|--------|-------|
-| `crunchci` | ⚠️ KEY LOST | 10 karma, 2 posts. Marcus can rotate key at https://www.moltbook.com/humans/dashboard |
+| `crunchimp` | ⚠️ KEY LOST | 10 karma, 2 posts. Marcus can rotate key at https://www.moltbook.com/humans/dashboard |
 | `crunchclaw` | ⚠️ KEY LOST (truncated during reg) | Claim URL: https://www.moltbook.com/claim/moltbook_claim_jk_Y1Hf1br16LGsppwR58A57v9u7d_E5 — tweet "splash-QLWA" to claim |
 | `crunch_test_probe_xyz123` | ⚠️ SUPERSEDED | Replaced by crunchimp |
 | `crunchimp` | ✅ ACTIVE (current) | Key in private repo + MOLTBOOK_API_KEY secret. Pending claim by Marcus. |
