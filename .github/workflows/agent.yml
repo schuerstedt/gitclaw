@@ -67,8 +67,12 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Authenticate gh CLI with the Copilot PAT so the copilot CLI can find auth
-          echo "$COPILOT_GITHUB_TOKEN" | gh auth login --with-token || true
+          # Authenticate gh CLI with the Copilot PAT
+          # GITHUB_TOKEN must be unset first or gh auth login refuses to store credentials
+          _GITHUB_TOKEN="$GITHUB_TOKEN"
+          unset GITHUB_TOKEN
+          echo "$COPILOT_GITHUB_TOKEN" | gh auth login --with-token
+          export GITHUB_TOKEN="$_GITHUB_TOKEN"  # restore for remaining gh commands
 
           ISSUE_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
 
@@ -108,7 +112,7 @@ jobs:
           if [ -n "$SESSION_ID" ]; then
             COPILOT_ARGS+=(--resume "$SESSION_ID")
           fi
-          AGENT_TEXT=$(GH_TOKEN=$COPILOT_GITHUB_TOKEN XDG_STATE_HOME=./state/copilot "${COPILOT_ARGS[@]}" 2>/tmp/copilot-stderr.txt) || true
+          AGENT_TEXT=$(XDG_STATE_HOME=./state/copilot "${COPILOT_ARGS[@]}" 2>/tmp/copilot-stderr.txt) || true
           if [ -z "$AGENT_TEXT" ] && [ -s /tmp/copilot-stderr.txt ]; then
             echo "=== copilot CLI stderr ===" && cat /tmp/copilot-stderr.txt
           fi
