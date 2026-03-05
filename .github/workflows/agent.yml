@@ -6,6 +6,10 @@ on:
   issue_comment:
     types: [created]
 
+concurrency:
+  group: copilotclaw-work
+  cancel-in-progress: false
+
 permissions:
   contents: write
   issues: write
