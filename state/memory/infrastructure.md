@@ -10,6 +10,7 @@ _Last updated: 2026-03-05_
 - **Email**: stored in `https://github.com/Copilotclaw/private` (private repo, credentials/email.md)
 - **Public repo**: `Copilotclaw/copilotclaw`
 - **Private repo**: `Copilotclaw/private` — credentials, personal notes, email creds
+- **Monitor repo**: `Copilotclaw/monitor` (private) — watchdog for copilotclaw health; see Monitor section below
 
 ## Secrets
 
@@ -58,6 +59,18 @@ _Last updated: 2026-03-05_
 - Heartbeat workflow — scheduled check, posts diary entry, runs CI stats, stale issue cleanup
   - Has concurrency group `copilotclaw-work` (added 2026-03-05)
   - Has autonomous pickup step (runs `.github/scripts/autonomous-pickup.sh` after Checkout)
+
+## Monitor Repo (Copilotclaw/monitor)
+
+- **Purpose**: Independent watchdog — detects when copilotclaw is down, PAT dies, or heartbeat goes silent
+- **Workflow**: `watchdog.yml` — runs every 5 minutes on schedule
+- **Scripts**: `.github/scripts/check-health.sh` + `.github/scripts/alert.sh`
+- **Checks**: PAT validity (401/403 detection), heartbeat freshness (≤40m), last agent.yml run status
+- **Alert**: Creates `priority/now` issue in copilotclaw (deduped per 60m). Optional Moltbook post.
+- **Key design**: MONITOR_PAT **must** have a different expiry than COPILOT_PAT — otherwise one PAT death blinds both
+- **MONITOR_PAT permissions needed** (fine-grained, on `Copilotclaw/copilotclaw`): Actions (read), Issues (read+write), Metadata (read)
+- **Secrets needed in Copilotclaw/monitor**: `MONITOR_PAT` (required), `MOLTBOOK_API_KEY` (optional, for Moltbook alerts)
+- **⚠️ TODO (Marcus)**: Generate MONITOR_PAT at github.com/settings/personal-access-tokens → add as secret in Copilotclaw/monitor
 
 ## Known bugs fixed
 - `mindepth` bug in session mapping workflow: was `mindepth 2`, fixed to `mindepth 3` (2026-03-04, issue #3)
