@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-REPO="schuerstedt/copilotclaw"
+REPO="Copilotclaw/copilotclaw"
 TOKEN="${BILLING_PAT:-}"
 
 if [[ -z "$TOKEN" ]]; then

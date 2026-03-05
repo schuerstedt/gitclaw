@@ -136,6 +136,9 @@ jobs:
           done
 
           # Comment on issue
+          if [ -z "$AGENT_TEXT" ]; then
+            AGENT_TEXT="🦃 Crunch: agent ran but returned no output. Check Actions logs for details (copilot CLI may have auth issues with the PAT)."
+          fi
           printf '%s' "$AGENT_TEXT" | head -c 60000 > /tmp/agent-response.txt
           gh issue comment "$ISSUE_NUMBER" --body-file /tmp/agent-response.txt
 

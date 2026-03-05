@@ -3,7 +3,7 @@
 # Validates that a target repo is on Crunch's allowed list before taking action.
 #
 # CRUNCH_REPOS env var: space or newline-separated list of allowed repos.
-# Default (when unset): only schuerstedt/copilotclaw is allowed.
+# Default (when unset): only Copilotclaw/copilotclaw is allowed.
 #
 # Usage:
 #   repo-allowlist.sh check <repo>   → exits 0 (allowed) or 1 (blocked)
@@ -15,7 +15,7 @@
 
 set -euo pipefail
 
-DEFAULT_REPOS="schuerstedt/copilotclaw"
+DEFAULT_REPOS="Copilotclaw/copilotclaw"
 ALLOWED="${CRUNCH_REPOS:-$DEFAULT_REPOS}"
 COMMAND="${1:-check}"
 TARGET="${2:-}"

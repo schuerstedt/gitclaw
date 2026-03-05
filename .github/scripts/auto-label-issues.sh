@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-REPO="${GITHUB_REPOSITORY:-schuerstedt/copilotclaw}"
+REPO="${GITHUB_REPOSITORY:-Copilotclaw/copilotclaw}"
 SKIP_ISSUES="10 11"
 
 echo "🏷️  Auto-labeling unlabeled issues..."

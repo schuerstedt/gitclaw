@@ -3,7 +3,7 @@
 # Usage: recall.sh "query" [category-label]
 #        recall.sh ""         → list all memories
 
-REPO="schuerstedt/copilotclaw"
+REPO="Copilotclaw/copilotclaw"
 QUERY="${1:-}"
 CATEGORY="${2:-}"
 

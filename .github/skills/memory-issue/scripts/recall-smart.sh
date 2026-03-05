@@ -5,7 +5,7 @@
 # Usage: recall-smart.sh "query"
 #        recall-smart.sh "query" [max-memories]
 
-REPO="schuerstedt/copilotclaw"
+REPO="Copilotclaw/copilotclaw"
 QUERY="${1:-}"
 MAX="${2:-50}"
 

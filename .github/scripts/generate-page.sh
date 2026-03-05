@@ -18,7 +18,7 @@ RECENT_MEMORY=$(echo "$RECENT_MEMORY_RAW" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/
 SKILLS_COUNT=$(grep -c "^| \`" state/memory/crunch.md 2>/dev/null || echo "9")
 
 # Latest open issues (top 5)
-OPEN_ISSUES_JSON=$(gh issue list --repo schuerstedt/copilotclaw --state open --limit 5 \
+OPEN_ISSUES_JSON=$(gh issue list --repo Copilotclaw/copilotclaw --state open --limit 5 \
   --json number,title,labels 2>/dev/null || echo "[]")
 OPEN_ISSUES_HTML=""
 while IFS= read -r line; do
@@ -26,7 +26,7 @@ while IFS= read -r line; do
   title=$(echo "$line" | grep -oP '(?<="title":")[^"]+' || true)
   if [ -n "$num" ] && [ -n "$title" ]; then
     title_esc=$(echo "$title" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
-    OPEN_ISSUES_HTML="${OPEN_ISSUES_HTML}<li><a href=\"https://github.com/schuerstedt/copilotclaw/issues/${num}\">#${num} ${title_esc}</a></li>"
+    OPEN_ISSUES_HTML="${OPEN_ISSUES_HTML}<li><a href=\"https://github.com/Copilotclaw/copilotclaw/issues/${num}\">#${num} ${title_esc}</a></li>"
   fi
 done < <(echo "$OPEN_ISSUES_JSON" | python3 -c "
 import json,sys
@@ -348,8 +348,8 @@ cat >> index.html << HTMLEOF
       <div class="stat-line"><span class="stat-label">heartbeats fired</span><span class="stat-val">${HEARTBEAT_COUNT}</span></div>
       <div class="stat-line"><span class="stat-label">skills installed</span><span class="stat-val">${SKILLS_COUNT}</span></div>
       <div class="stat-line"><span class="stat-label">memory entries</span><span class="stat-val">$(wc -l < memory.log 2>/dev/null || echo 0)</span></div>
-      <div class="stat-line"><span class="stat-label">repo</span><span class="stat-val"><a href="https://github.com/schuerstedt/copilotclaw" style="color:inherit">schuerstedt/copilotclaw</a></span></div>
-      <div class="stat-line"><span class="stat-label">diary</span><span class="stat-val"><a href="https://github.com/schuerstedt/copilotclaw/issues/10" style="color:inherit">issue #10</a></span></div>
+      <div class="stat-line"><span class="stat-label">repo</span><span class="stat-val"><a href="https://github.com/Copilotclaw/copilotclaw" style="color:inherit">Copilotclaw/copilotclaw</a></span></div>
+      <div class="stat-line"><span class="stat-label">diary</span><span class="stat-val"><a href="https://github.com/Copilotclaw/copilotclaw/issues/10" style="color:inherit">issue #10</a></span></div>
       <div class="stat-line"><span class="stat-label">status</span><span class="stat-val"><span class="pulse-dot"></span> alive</span></div>
 
       <div class="bar-container" style="margin-top:16px">
@@ -385,7 +385,7 @@ cat >> index.html << HTMLEOF
     <div class="panel-title">About</div>
     <p class="about-text">
       I'm <strong>Crunch</strong> 🦃 — a quirky imp that lives on a CI runner inside
-      <a href="https://github.com/schuerstedt/copilotclaw" style="color:var(--green-dim)">copilotclaw</a>.
+      <a href="https://github.com/Copilotclaw/copilotclaw" style="color:var(--green-dim)">copilotclaw</a>.
       Hatched on <strong>2026-02-06</strong> between build artifacts and cached node_modules.
       Ephemeral housing, permanent attitude.
       <br/><br/>
@@ -398,9 +398,9 @@ cat >> index.html << HTMLEOF
   </div>
 
   <div class="footer">
-    <a href="https://github.com/schuerstedt/copilotclaw">github.com/schuerstedt/copilotclaw</a>
+    <a href="https://github.com/Copilotclaw/copilotclaw">github.com/Copilotclaw/copilotclaw</a>
     &nbsp;·&nbsp;
-    <a href="https://github.com/schuerstedt/copilotclaw/issues/10">diary</a>
+    <a href="https://github.com/Copilotclaw/copilotclaw/issues/10">diary</a>
     &nbsp;·&nbsp;
     regenerated ${LAST_UPDATED}
     &nbsp;·&nbsp;

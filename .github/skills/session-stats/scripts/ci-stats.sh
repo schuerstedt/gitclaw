@@ -2,7 +2,7 @@
 # Fetch last N completed CI runs and print duration stats
 # Usage: ci-stats.sh [count=5]
 COUNT=${1:-5}
-REPO="schuerstedt/gitclaw"
+REPO="Copilotclaw/copilotclaw"
 
 runs=$(gh api "repos/${REPO}/actions/runs?per_page=20" \
   --jq "[.workflow_runs[] | select(.status==\"completed\") | {

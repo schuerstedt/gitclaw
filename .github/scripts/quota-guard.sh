@@ -11,12 +11,12 @@
 #   BILLING_PAT      — PAT with "Plan" user permission (read)
 #   CRUNCH_QUOTA_WARN  — warn threshold, default 80 (%)
 #   CRUNCH_QUOTA_BLOCK — block threshold, default 90 (%)
-#   CRUNCH_REPO      — repo for pinging Marcus, default schuerstedt/copilotclaw
+#   CRUNCH_REPO      — repo for pinging Marcus, default Copilotclaw/copilotclaw
 
 set -euo pipefail
 
 COMMAND="${1:-check}"
-REPO="${CRUNCH_REPO:-schuerstedt/copilotclaw}"
+REPO="${CRUNCH_REPO:-Copilotclaw/copilotclaw}"
 WARN_PCT="${CRUNCH_QUOTA_WARN:-80}"
 BLOCK_PCT="${CRUNCH_QUOTA_BLOCK:-90}"
 

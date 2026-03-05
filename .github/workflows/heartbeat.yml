@@ -51,5 +51,8 @@ jobs:
           done
 
           # Post diary entry to issue #10
+          if [ -z "$AGENT_TEXT" ]; then
+            AGENT_TEXT="🦃 Crunch: heartbeat ran but copilot CLI returned no output. Check Actions logs — PAT may need updating for new org."
+          fi
           printf '%s' "$AGENT_TEXT" | head -c 60000 > /tmp/heartbeat-response.txt
           gh issue comment 10 --body-file /tmp/heartbeat-response.txt

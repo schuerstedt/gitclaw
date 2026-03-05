@@ -3,7 +3,7 @@
 # Usage: store.sh "Title" "Body" [category-label]
 set -e
 
-REPO="schuerstedt/copilotclaw"
+REPO="Copilotclaw/copilotclaw"
 TITLE="${1:?Usage: store.sh <title> <body> [category-label]}"
 BODY="${2:?Body required}"
 CATEGORY="${3:-}"

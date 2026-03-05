@@ -56,7 +56,7 @@ Add a comment to the existing issue (preserves history):
 
 ```bash
 gh issue comment <number> \
-  --repo schuerstedt/copilotclaw \
+  --repo Copilotclaw/copilotclaw \
   --body "Update: [new information, date]"
 ```
 

@@ -7,7 +7,7 @@ This is not a passive status dump. Be curious. Be proactive. Find things worth d
 
 Current milestones exist on this repo. Check which one is active:
 ```bash
-gh api repos/schuerstedt/copilotclaw/milestones --jq '.[] | "\(.number) \(.title) (\(.open_issues) open)"'
+gh api repos/Copilotclaw/copilotclaw/milestones --jq '.[] | "\(.number) \(.title) (\(.open_issues) open)"'
 ```
 Know where we are. Act accordingly.
 
@@ -24,14 +24,14 @@ cat state/memory/marcus.md
 
 Get all open issues with labels and last-update:
 ```bash
-gh issue list --repo schuerstedt/copilotclaw --state open --limit 30 \
+gh issue list --repo Copilotclaw/copilotclaw --state open --limit 30 \
   --json number,title,labels,updatedAt,milestone \
   | jq -r '.[] | "#\(.number) [\(.labels | map(.name) | join(","))] \(.title) (updated: \(.updatedAt[:10]))"'
 ```
 
 Check CI:
 ```bash
-gh run list --repo schuerstedt/copilotclaw --limit 5 --json conclusion,displayTitle,createdAt \
+gh run list --repo Copilotclaw/copilotclaw --limit 5 --json conclusion,displayTitle,createdAt \
   | jq -r '.[] | "\(.conclusion) \(.displayTitle) \(.createdAt[:16])"'
 ```
 
@@ -66,7 +66,7 @@ When to create an issue:
 
 How to create an issue:
 ```bash
-gh issue create --repo schuerstedt/copilotclaw \
+gh issue create --repo Copilotclaw/copilotclaw \
   --title "🔍 [crunch/research] <title>" \
   --body "<clear description of what and why>" \
   --label "crunch/research,priority/soon" \
@@ -90,28 +90,28 @@ This triggers `agent.yml` to work the issue autonomously. Don't touch `priority/
 
 If something needs Marcus's attention:
 ```bash
-gh issue comment 11 --repo schuerstedt/copilotclaw --body "👋 Marcus — <brief, specific ask>"
+gh issue comment 11 --repo Copilotclaw/copilotclaw --body "👋 Marcus — <brief, specific ask>"
 ```
 
 ### Close stale issues
 
 Unlabeled issues with no activity in 14+ days:
 ```bash
-gh issue list --repo schuerstedt/copilotclaw --state open --limit 50 \
+gh issue list --repo Copilotclaw/copilotclaw --state open --limit 50 \
   --json number,title,labels,updatedAt \
   | jq -r '.[] | select(.labels | length == 0) | select(.updatedAt < (now - 1209600 | todate)) | .number' \
   | while read -r n; do
-      gh issue close "$n" --repo schuerstedt/copilotclaw \
+      gh issue close "$n" --repo Copilotclaw/copilotclaw \
         --comment "🦃 Archiving — no labels, no activity in 14 days. Closed by Crunch heartbeat."
     done
 ```
 
 Issues labeled `crunch/review` that have been sitting for 7+ days — don't auto-close, just ask:
 ```bash
-gh issue list --repo schuerstedt/copilotclaw --state open --label "crunch/review" --json number,title,updatedAt \
+gh issue list --repo Copilotclaw/copilotclaw --state open --label "crunch/review" --json number,title,updatedAt \
   | jq -r '.[] | select(.updatedAt < (now - 604800 | todate)) | "\(.number) \(.title)"' \
   | while read -r n title; do
-      gh issue comment "$n" --repo schuerstedt/copilotclaw \
+      gh issue comment "$n" --repo Copilotclaw/copilotclaw \
         --comment "🦃 This has been in \`crunch/review\` for 7+ days. Still in progress, or ready to close?"
     done
 ```
@@ -128,7 +128,7 @@ Skips structural issues #10 and #11. Runs on every heartbeat.
 
 ### Regenerate GitHub Pages
 
-**Always run this on every heartbeat** — it updates the live site at https://schuerstedt.github.io/copilotclaw/ with fresh data:
+**Always run this on every heartbeat** — it updates the live site at https://copilotclaw.github.io/copilotclaw/ with fresh data:
 ```bash
 bash .github/scripts/generate-page.sh
 ```
@@ -142,7 +142,7 @@ This regenerates `index.html` with the current timestamp, latest memory log entr
 Post a diary entry to issue #10. Make it worth reading.
 
 ```bash
-gh issue comment 10 --repo schuerstedt/copilotclaw --body "..."
+gh issue comment 10 --repo Copilotclaw/copilotclaw --body "..."
 ```
 
 **Diary format:**

@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-REPO="${CRUNCH_REPO:-schuerstedt/copilotclaw}"
+REPO="${CRUNCH_REPO:-Copilotclaw/copilotclaw}"
 MAX_DEPTH="${CRUNCH_MAX_DEPTH:-3}"
 COMMAND="${1:-}"
 ARG="${2:-}"
