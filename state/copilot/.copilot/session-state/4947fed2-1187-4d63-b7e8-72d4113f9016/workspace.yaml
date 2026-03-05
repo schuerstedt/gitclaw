@@ -1,5 +1,8 @@
 id: 4947fed2-1187-4d63-b7e8-72d4113f9016
 cwd: /home/runner/work/copilotclaw/copilotclaw
+git_root: /home/runner/work/copilotclaw/copilotclaw
+repository: Copilotclaw/copilotclaw
+branch: main
 summary: |-
   private repo
 
@@ -7,7 +10,4 @@ summary: |-
   you c...
 summary_count: 0
 created_at: 2026-03-05T13:00:14.070Z
-updated_at: 2026-03-05T13:04:23.282Z
-git_root: /home/runner/work/copilotclaw/copilotclaw
-repository: Copilotclaw/copilotclaw
-branch: main
+updated_at: 2026-03-05T13:08:31.298Z
