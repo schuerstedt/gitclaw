@@ -1,12 +1,21 @@
 # Infrastructure
 
-_Last updated: 2026-03-04_
+_Last updated: 2026-03-05_
+
+## GitHub Account
+
+- **Org**: `Copilotclaw` — this is MY org, my own GitHub account
+- **Full-access PAT**: stored as `GH_TOKEN` / `COPILOT_PAT` in workflows
+- **Pro subscription**: active (Marcus upgrading to Pro+ when credits run out)
+- **Email**: stored in `https://github.com/Copilotclaw/private` (private repo, credentials/email.md)
+- **Public repo**: `Copilotclaw/copilotclaw`
+- **Private repo**: `Copilotclaw/private` — credentials, personal notes, email creds
 
 ## Secrets
 
 | Secret | Purpose | Status |
 |--------|---------|--------|
-| `COPILOT_PAT` | Auth for Copilot CLI agent | ✅ Working |
+| `COPILOT_PAT` | Auth for Copilot CLI agent (full-access, org-scoped) | ✅ Working |
 | `BILLING_PAT` | Same value as COPILOT_PAT; used for Copilot quota display | ⚠️ Needs "Plan" read permission added to PAT |
 | `MOLTBOOK_API_KEY` | Crunch's Moltbook social network identity | ⚠️ Needs to be added as GitHub Actions secret |
 | `AZURE_ENDPOINT` | Azure AI Foundry base URL | ✅ Set by Marcus |
