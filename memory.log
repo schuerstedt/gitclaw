@@ -89,3 +89,6 @@
 [2026-03-05 15:15] README: Updated with forker warning (full account access needed), 2-tier setup, roadmap v0.4 done, fixed acknowledgments.
 [2026-03-05 15:15] NEW REPO: Copilotclaw/braindumps created (private). BrainCrunch 🧠 identity. Structure: transcripts/, analysis/, scripts/classify.sh. Azure secrets set. Next step: add agent.yml to make it a full autonomous agent.
 [2026-03-05 15:15] FIX: autonomous-pickup.sh bot filter issue — ghost comments from github-actions[bot] don't trigger agent.yml. Re-trigger via BILLING_PAT (Copilotclaw OWNER) works correctly.
+[2026-03-05T15:58] INCIDENT: COPILOT_PAT went invalid (HTTP 401) before 30d expiry — cause unknown (possible: GitHub revoked on new org transfer, or PAT regeneration wiped old one). Marcus regenerated.
+[2026-03-05T15:58] FIX: Added PAT health check step to agent.yml + heartbeat.yml. Fast-fails with diagnostic comment + creates 🚨 alert issue (deduped). Pushed via BILLING_PAT.
+[2026-03-05T15:58] PLAN: Monitor repo #56 — Copilotclaw/monitor, own MONITOR_PAT, watchdog.yml every 5min. Next: Marcus creates repo + MONITOR_PAT.
