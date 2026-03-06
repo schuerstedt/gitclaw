@@ -1,0 +1,41 @@
+name: "🦉 Strix Task Runner"
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      task_payload:
+        description: "JSON task payload from dispatcher"
+        required: true
+        type: string
+
+jobs:
+  execute:
+    runs-on: [self-hosted, windows, strix]
+
+    steps:
+      - name: "📋 Parse task"
+        id: parse
+        shell: bash
+        run: |
+          echo '${{ github.event.inputs.task_payload }}' > /tmp/task.json
+          TASK_ID=$(python3 -c "import json; d=json.load(open('/tmp/task.json')); print(d.get('task_id','unknown'))")
+          echo "task_id=$TASK_ID" >> $GITHUB_OUTPUT
+
+      - name: "🤖 Execute with Claude Code"
+        shell: bash
+        run: |
+          TITLE=$(python3 -c "import json; d=json.load(open('/tmp/task.json')); print(d.get('issue_title',''))")
+          BODY=$(python3 -c "import json; d=json.load(open('/tmp/task.json')); print(d.get('issue_body',''))")
+          PROMPT="Task: $TITLE\n\n$BODY"
+          claude --print "$PROMPT" > /tmp/result.txt 2>&1 || echo "ERROR: Claude failed" > /tmp/result.txt
+
+      - name: "📤 Send result via dispatcher"
+        shell: bash
+        run: |
+          RESULT=$(cat /tmp/result.txt)
+          python3 ~/strix/send_result.py \
+            --task-id "${{ steps.parse.outputs.task_id }}" \
+            --result "$RESULT" \
+            --status "done"
