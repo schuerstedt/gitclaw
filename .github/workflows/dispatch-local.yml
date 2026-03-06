@@ -1,99 +1,145 @@
-name: "🦉 Dispatch to Strix (Local)"
+name: Dispatch Task to Local (Strix)
 
-# Triggered when the 'dispatch/local' label is added to an issue
 on:
   issues:
     types: [labeled]
 
 concurrency:
-  group: dispatch-local-${{ github.event.issue.number }}
+  group: claw-dispatch-${{ github.event.issue.number }}
   cancel-in-progress: false
 
 permissions:
-  issues: write
   contents: read
+  issues: write
 
 jobs:
   dispatch:
-    if: github.event.label.name == 'dispatch/local'
     runs-on: ubuntu-latest
-
+    if: github.event.label.name == 'dispatch/local'
     steps:
-      - name: "📦 Package and dispatch task to Strix"
-        env:
-          CLOUD_GPG_PRIVATE_KEY: ${{ secrets.CLOUD_GPG_PRIVATE_KEY }}
-          CLOUD_GPG_FINGERPRINT: ${{ secrets.CLOUD_GPG_FINGERPRINT }}
-          CLOUD_EMAIL: ${{ secrets.CLOUD_EMAIL }}
-          CLOUD_EMAIL_PASSWORD: ${{ secrets.CLOUD_EMAIL_PASSWORD }}
-          LOCAL_EMAIL: ${{ secrets.LOCAL_EMAIL }}
-          EMAIL_SMTP_HOST: ${{ secrets.EMAIL_SMTP_HOST }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-          ISSUE_TITLE: ${{ github.event.issue.title }}
-          ISSUE_BODY: ${{ github.event.issue.body }}
-          ISSUE_URL: ${{ github.event.issue.html_url }}
-          REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ secrets.BILLING_PAT }}
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
         run: |
-          set -euo pipefail
-          pip install python-gnupg 2>/dev/null | tail -1
+          sudo apt-get install -y gpg msmtp python3-pip
+          pip3 install python-gnupg
 
-          python3 << 'PYEOF'
-          import gnupg
-          import smtplib
-          import json
-          import os
-          import tempfile
-          from email.mime.text import MIMEText
-          from email.mime.multipart import MIMEMultipart
-          from datetime import datetime, timezone
+      - name: Import Crunch cloud GPG private key
+        env:
+          CLAW_CLOUD_GPG_PRIVATE: ${{ secrets.CLAW_CLOUD_GPG_PRIVATE }}
+        run: |
+          mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
+          echo "$CLAW_CLOUD_GPG_PRIVATE" | gpg --batch --import
+          echo "Cloud GPG key imported"
 
-          # Setup GPG
-          gnupghome = tempfile.mkdtemp()
-          gpg = gnupg.GPG(gnupghome=gnupghome)
-          gpg.import_keys(os.environ['CLOUD_GPG_PRIVATE_KEY'])
+      - name: Package and sign task
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          TITLE="${{ github.event.issue.title }}"
 
-          fingerprint = os.environ['CLOUD_GPG_FINGERPRINT']
+          # Fetch full issue with comments
+          BODY=$(gh issue view "$ISSUE_NUMBER" --json body --jq '.body')
+          COMMENTS=$(gh issue view "$ISSUE_NUMBER" --json comments \
+            --jq '[.comments[] | {author: .author.login, body: .body, createdAt: .createdAt}]')
+          LABELS=$(gh issue view "$ISSUE_NUMBER" --json labels --jq '[.labels[].name]')
 
-          # Build task payload
-          payload = {
-              "task_id": f"GH-{os.environ['ISSUE_NUMBER']}",
-              "issue_number": int(os.environ['ISSUE_NUMBER']),
-              "issue_title": os.environ['ISSUE_TITLE'],
-              "issue_body": os.environ['ISSUE_BODY'],
-              "issue_url": os.environ['ISSUE_URL'],
-              "repo": os.environ['REPO'],
-              "dispatched_at": datetime.now(timezone.utc).isoformat(),
-              "return_to": os.environ['CLOUD_EMAIL'],
-          }
-          payload_json = json.dumps(payload, indent=2)
+          # Build task JSON
+          TASK_JSON=$(jq -n \
+            --arg issue_number "$ISSUE_NUMBER" \
+            --arg title "$TITLE" \
+            --arg body "$BODY" \
+            --arg repo "$GITHUB_REPOSITORY" \
+            --arg dispatched_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --argjson comments "$COMMENTS" \
+            --argjson labels "$LABELS" \
+            '{
+              task_id: ("CLAW_TASK_" + $issue_number),
+              issue_number: ($issue_number | tonumber),
+              title: $title,
+              body: $body,
+              comments: $comments,
+              labels: $labels,
+              repo: $repo,
+              dispatched_at: $dispatched_at,
+              return_issue: ($issue_number | tonumber),
+              spawn_depth: 1
+            }')
 
-          # Sign the payload
-          signed = gpg.sign(payload_json, keyid=fingerprint, clearsign=True)
-          if not signed:
-              raise RuntimeError(f"GPG signing failed: {signed.status}")
+          echo "$TASK_JSON" > /tmp/task.json
+
+          # Sign the task JSON with Crunch's cloud key
+          gpg --batch --armor --clearsign \
+            --default-key crunchcloud.agent@aigege.de \
+            /tmp/task.json
+
+          mv /tmp/task.json.asc /tmp/task-signed.asc
+          echo "Task signed:"
+          head -5 /tmp/task-signed.asc
+
+      - name: Send task via email to Strix
+        env:
+          CLAW_CLOUD_EMAIL: ${{ secrets.CLAW_CLOUD_EMAIL }}
+          CLAW_CLOUD_EMAIL_PASS: ${{ secrets.CLAW_CLOUD_EMAIL_PASS }}
+          CLAW_LOCAL_EMAIL: ${{ secrets.CLAW_LOCAL_EMAIL }}
+          CLAW_SMTP_HOST: ${{ secrets.CLAW_SMTP_HOST }}
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          TITLE="${{ github.event.issue.title }}"
+
+          # Configure msmtp
+          cat > ~/.msmtprc <<EOF
+          account claw
+          host ${CLAW_SMTP_HOST}
+          port 465
+          tls on
+          tls_starttls off
+          auth on
+          user ${CLAW_CLOUD_EMAIL}
+          password ${CLAW_CLOUD_EMAIL_PASS}
+          from ${CLAW_CLOUD_EMAIL}
+          account default : claw
+          EOF
+          chmod 600 ~/.msmtprc
 
           # Build email
+          SUBJECT="CLAW_TASK: #${ISSUE_NUMBER} — ${TITLE}"
+          SIGNED_BODY=$(cat /tmp/task-signed.asc)
+
+          python3 - <<PYEOF
+          import smtplib, ssl, os
+          from email.mime.text import MIMEText
+          from email.mime.multipart import MIMEMultipart
+
           msg = MIMEMultipart()
-          msg['From'] = os.environ['CLOUD_EMAIL']
-          msg['To'] = os.environ['LOCAL_EMAIL']
-          msg['Subject'] = f"CLAW_TASK: {os.environ['ISSUE_NUMBER']} {os.environ['ISSUE_TITLE']}"
-          msg['X-CLAW-Task-ID'] = f"GH-{os.environ['ISSUE_NUMBER']}"
-          msg.attach(MIMEText(str(signed), 'plain'))
+          msg['From'] = os.environ['CLAW_CLOUD_EMAIL']
+          msg['To'] = os.environ['CLAW_LOCAL_EMAIL']
+          msg['Subject'] = "CLAW_TASK: #${ISSUE_NUMBER} — ${TITLE}"
+          msg['X-CLAW-Issue'] = "${ISSUE_NUMBER}"
+          msg['X-CLAW-Repo'] = "${GITHUB_REPOSITORY}"
 
-          # Send via SMTP
-          smtp_host = os.environ['EMAIL_SMTP_HOST']
-          with smtplib.SMTP_SSL(smtp_host, 465) as server:
-              server.login(os.environ['CLOUD_EMAIL'], os.environ['CLOUD_EMAIL_PASSWORD'])
-              server.send_message(msg)
+          with open('/tmp/task-signed.asc', 'r') as f:
+              body = f.read()
 
-          print(f"✅ Task GH-{os.environ['ISSUE_NUMBER']} dispatched to Strix")
+          msg.attach(MIMEText(body, 'plain'))
+
+          context = ssl.create_default_context()
+          with smtplib.SMTP_SSL(os.environ['CLAW_SMTP_HOST'], 465, context=context) as server:
+              server.login(os.environ['CLAW_CLOUD_EMAIL'], os.environ['CLAW_CLOUD_EMAIL_PASS'])
+              server.sendmail(
+                  os.environ['CLAW_CLOUD_EMAIL'],
+                  os.environ['CLAW_LOCAL_EMAIL'],
+                  msg.as_string()
+              )
+          print(f"Task dispatched to Strix: CLAW_TASK: #${ISSUE_NUMBER}")
           PYEOF
 
-      - name: "💬 Comment on issue"
+      - name: Comment on issue
         env:
-          GH_TOKEN: ${{ secrets.BILLING_PAT }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh issue comment "$ISSUE_NUMBER" \
-            --repo "${{ github.repository }}" \
-            --body "🦉 **Dispatched to Strix** — task packaged, PGP-signed, and emailed to the local agent. I'll post results here when Strix reports back."
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          BODY="📨 **Task dispatched to Strix** (local agent) via PGP-signed email.\n\nStrix will pick this up within 30 seconds, claim it, and start working. Results will be posted back here automatically.\n\n_Waiting for \`CLAW_RESULT:\` response from Strix..._"
+          printf '%b' "$BODY" | gh issue comment "$ISSUE_NUMBER" --body-file -
