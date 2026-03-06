@@ -60,6 +60,7 @@ jobs:
       - name: Sub-repo scan
         env:
           BILLING_PAT: ${{ secrets.COPILOT_PAT }}
+          GH_BOT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash .github/scripts/sub-repo-scan.sh
 
       - name: Auto-label unlabeled issues
@@ -138,4 +139,6 @@ jobs:
             AGENT_TEXT="🦃 Crunch: heartbeat ran but copilot CLI returned no output. Check Actions logs — PAT may need updating for new org."
           fi
           printf '%s' "$AGENT_TEXT" | head -c 60000 > /tmp/heartbeat-response.txt
-          gh issue comment 10 --body-file /tmp/heartbeat-response.txt
+          # Use GITHUB_TOKEN (github-actions[bot]) for diary post so it doesn't
+          # re-trigger agent.yml (which filters out Bot sender type).
+          GH_TOKEN="$_GITHUB_TOKEN" gh issue comment 10 --body-file /tmp/heartbeat-response.txt
