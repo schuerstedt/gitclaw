@@ -30,19 +30,31 @@ jobs:
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: token ${COPILOT_GITHUB_TOKEN}" \
-            https://api.github.com/user)
-          if [ "$HTTP_STATUS" != "200" ]; then
+          check_pat() {
+            curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: token ${COPILOT_GITHUB_TOKEN}" \
+              https://api.github.com/user
+          }
+          HTTP_STATUS=$(check_pat)
+          # Retry once on 5xx (transient GitHub API errors like 502/503)
+          if [[ "$HTTP_STATUS" =~ ^5 ]]; then
+            sleep 5
+            HTTP_STATUS=$(check_pat)
+          fi
+          # Only 401 = truly expired/revoked token. 403 = valid token, lacks endpoint perm.
+          # 5xx still transient after retry — don't false-alarm.
+          if [ "$HTTP_STATUS" = "401" ]; then
             EXISTING=$(gh issue list --label bug --state open \
               --search "COPILOT_PAT expired" --json number --jq '.[0].number' 2>/dev/null || true)
             if [ -z "$EXISTING" ]; then
               gh issue create \
                 --title "🚨 COPILOT_PAT expired or invalid" \
-                --body "$(printf 'Heartbeat detected invalid COPILOT_PAT (HTTP %s) at %s.\n\nFix: regenerate PAT at https://github.com/settings/tokens and update secret at https://github.com/Copilotclaw/copilotclaw/settings/secrets/actions\n\n<!-- crunch-depth: 1 -->' "$HTTP_STATUS" "$(date -u +%Y-%m-%dT%H:%M:%SZ)")" \
+                --body "$(printf 'Heartbeat detected expired/revoked COPILOT_PAT (HTTP %s) at %s.\n\nFix: regenerate PAT at https://github.com/settings/tokens and update secret at https://github.com/Copilotclaw/copilotclaw/settings/secrets/actions\n\n<!-- crunch-depth: 1 -->' "$HTTP_STATUS" "$(date -u +%Y-%m-%dT%H:%M:%SZ)")" \
                 --label "bug" || true
             fi
             exit 1
+          elif [[ "$HTTP_STATUS" =~ ^5 ]]; then
+            echo "⚠️ GitHub API returned ${HTTP_STATUS} (transient) — skipping PAT alert, continuing."
           fi
 
       - name: Sub-repo scan
