@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '*/5 * * * *'  # Poll every 5 minutes
   workflow_dispatch:
+    inputs:
+      recover_all:
+        description: 'Search ALL emails (including already-seen) for recovery'
+        type: boolean
+        default: false
 
 concurrency:
   group: claw-recv-local
@@ -55,6 +60,7 @@ jobs:
           CLAW_CLOUD_EMAIL_PASS: ${{ secrets.CLAW_CLOUD_EMAIL_PASS }}
           CLAW_IMAP_HOST: ${{ secrets.CLAW_IMAP_HOST }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RECOVER_ALL: ${{ inputs.recover_all || 'false' }}
         run: |
           python3 - <<'PYEOF'
           import imaplib, email, os, json, subprocess, re, sys
@@ -62,24 +68,27 @@ jobs:
           IMAP_HOST = os.environ['CLAW_IMAP_HOST']
           EMAIL = os.environ['CLAW_CLOUD_EMAIL']
           PASSWORD = os.environ['CLAW_CLOUD_EMAIL_PASS']
+          RECOVER_ALL = os.environ.get('RECOVER_ALL', 'false').lower() == 'true'
 
           print(f"Connecting to {IMAP_HOST}:993...")
           mail = imaplib.IMAP4_SSL(IMAP_HOST, 993)
           mail.login(EMAIL, PASSWORD)
           mail.select('INBOX')
 
-          # Search for unread CLAW_RESULT emails from Strix
-          _, data = mail.search(None, 'UNSEEN SUBJECT "CLAW_RESULT:"')
+          # Search: UNSEEN for normal runs, ALL for recovery mode
+          search_criteria = 'SUBJECT "CLAW_RESULT:"' if RECOVER_ALL else 'UNSEEN SUBJECT "CLAW_RESULT:"'
+          _, data = mail.search(None, search_criteria)
           msg_ids = data[0].split()
 
           if not msg_ids:
-              print("No new results from Strix.")
+              print(f"No {'(including seen) ' if RECOVER_ALL else 'new '}results from Strix.")
               sys.exit(0)
 
-          print(f"Found {len(msg_ids)} new result(s) from Strix")
+          print(f"Found {len(msg_ids)} result(s) from Strix {'(recovery mode)' if RECOVER_ALL else ''}")
 
           for msg_id in msg_ids:
-              _, msg_data = mail.fetch(msg_id, '(RFC822)')
+              # PEEK avoids auto-marking as seen; we mark manually only on success
+              _, msg_data = mail.fetch(msg_id, '(BODY.PEEK[])')
               raw_email = msg_data[0][1]
               msg = email.message_from_bytes(raw_email)
 
