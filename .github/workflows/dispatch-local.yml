@@ -2,7 +2,7 @@ name: Dispatch Task to Local (Strix)
 
 on:
   issues:
-    types: [labeled]
+    types: [labeled, opened]
 
 concurrency:
   group: claw-dispatch-${{ github.event.issue.number }}
@@ -15,7 +15,7 @@ permissions:
 jobs:
   dispatch:
     runs-on: ubuntu-latest
-    if: github.event.label.name == 'dispatch/local'
+    if: github.event.label.name == 'dispatch/local' || contains(github.event.issue.labels.*.name, 'dispatch/local')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
