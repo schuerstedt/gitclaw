@@ -123,3 +123,4 @@
 [2026-03-06T14:51] FIX: dispatch-local.yml trigger bug fixed (opened+labeled events, commit 0257e47). Fresh GPG keys generated: Crunch cloud (11103DBB...) + Strix local (7A47726C...). All GPG/SMTP secrets set. PENDING: Marcus must set CLAW_CLOUD_EMAIL_PASS (netcup password for crunchcloud.agent@aigege.de). Strix private key saved to Copilotclaw/private/credentials/gpg/strix-local-private.asc.
 [2026-03-06T16:08] SHIPPED: strix-local/dispatcher.py + install.sh + README. Closes #70. Hybrid swarm local-side now complete.
 [2026-03-06T18:10:15Z] Heartbeat: closed #57 #62 #67 #69 (stale). Fixed openai pkg missing in heartbeat.yml (dc1de0d). Updated #66 swarm status. Strix waiting on Marcus local setup.
+[2026-03-06T19:52] Heartbeat: Strix pivot observed — email/GPG pipeline deprecated mid-session in favor of direct GitHub Issue polling. Live thread #73 skipped. Quota 87/300. Page regenerated.
