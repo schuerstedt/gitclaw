@@ -224,3 +224,7 @@ SHIPPED: .github/scripts/lib/ — platform.py + 4 scripts. Works on GitHub+Gitea
 [2026-03-07T16:52:16Z] HOOK:SessionStart source=new
 [2026-03-07 16:52] MILESTONE: First local Spark session! Marcus ran spark.py locally for the first time. Spark alive on his machine.
 [2026-03-07T16:52:51Z] HOOK:SessionEnd reason=complete
+[2026-03-07T16:55:38Z] HOOK:SessionStart source=new
+[2026-03-07T16:56:14Z] HOOK:ToolFailure tool=bash result=failure msg=Command blocked: contains dangerous shell expansion patterns (e.g., parameter transformation, indirect expansion, or nested command substitution) that could enable arbitrary code execution. Please rew
+[2026-03-07T16:56Z] Spark milestone confirmed: local Spark on macserver fully operational. WSL2+act loop working. claude/gemini/codex/opencode available. First spark/claimed cycle complete.
+[2026-03-07T16:56:36Z] HOOK:SessionEnd reason=complete
