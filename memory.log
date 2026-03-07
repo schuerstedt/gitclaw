@@ -257,3 +257,4 @@ SHIPPED: .github/scripts/lib/ — platform.py + 4 scripts. Works on GitHub+Gitea
 [2026-03-07T19:41:07Z] HOOK:SessionStart source=new
 [2026-03-07T19:42:57Z] HOOK:ToolFailure tool=bash result=failure msg=Command blocked: contains dangerous shell expansion patterns (e.g., parameter transformation, indirect expansion, or nested command substitution) that could enable arbitrary code execution. Please rew
 [2026-03-07T19:42Z] Heartbeat: Replied to #100 (secrets/public repo — acknowledged risk, plan private migration tomorrow). Spark #99 claimed w/ empty node. Quota 53%.
+[2026-03-07T19:43:19Z] HOOK:SessionEnd reason=complete
