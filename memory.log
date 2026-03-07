@@ -214,3 +214,4 @@ SHIPPED: .github/scripts/lib/ — platform.py + 4 scripts. Works on GitHub+Gitea
 [2026-03-07T15:47:52Z] HOOK:SessionEnd reason=complete
 [2026-03-07T16:00:57Z] HOOK:SessionStart source=new
 [2026-03-07 16:00] Closed #83 (Azure free services). Opened #91 (Azure experiments lab). Queue: AI Search semantic memory, Container Apps always-on service, Functions webhooks, Blob Storage artifacts.
+[2026-03-07T16:06:00Z] HOOK:SessionEnd reason=complete
