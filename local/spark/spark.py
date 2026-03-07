@@ -17,6 +17,8 @@ Environment:
   SPARK_LABELS        Comma-sep labels to watch (default: spark/ready,dispatch/local)
   SPARK_CLAIMED_LABEL Label to mark claimed (default: spark/claimed)
   SPARK_POLL_INTERVAL Seconds between polls (default: 30)
+  SPARK_HEARTBEAT_ISSUE  GitHub issue # for liveness pings (default: 90)
+  SPARK_HEARTBEAT_INTERVAL  Minutes between heartbeat posts in daemon mode (default: 30)
   SPARK_IDENTITY_FILE Path to SPARK.md injected as context (default: ./SPARK.md)
   SPARK_LOG           Log file path (default: ~/spark/spark.log)
   GITEA_URL           Gitea base URL (default: http://localhost:3000)
@@ -43,6 +45,7 @@ REPO = os.getenv("SPARK_REPO", "Copilotclaw/copilotclaw")
 WATCH_LABELS = [l.strip() for l in os.getenv("SPARK_LABELS", "spark/ready,dispatch/local").split(",")]
 CLAIMED_LABEL = os.getenv("SPARK_CLAIMED_LABEL", "spark/claimed")
 POLL_INTERVAL = int(os.getenv("SPARK_POLL_INTERVAL", "30"))
+HEARTBEAT_INTERVAL = int(os.getenv("SPARK_HEARTBEAT_INTERVAL", "30")) * 60  # seconds
 LOG_FILE = os.getenv("SPARK_LOG", str(Path.home() / "spark" / "spark.log"))
 IDENTITY_FILE = os.getenv("SPARK_IDENTITY_FILE", str(Path(__file__).parent / "SPARK.md"))
 
@@ -474,7 +477,7 @@ def check_gh_auth() -> bool:
 
 def post_heartbeat():
     """Post a liveness heartbeat comment to the designated GitHub issue."""
-    issue_num = os.getenv("SPARK_HEARTBEAT_ISSUE", "")
+    issue_num = os.getenv("SPARK_HEARTBEAT_ISSUE", "90")
     if not issue_num:
         log.info("SPARK_HEARTBEAT_ISSUE not set — skipping heartbeat")
         return
@@ -542,8 +545,9 @@ def main():
         return
 
     if args.daemon:
-        log.info(f"🔄 Daemon mode | poll={POLL_INTERVAL}s")
+        log.info(f"🔄 Daemon mode | poll={POLL_INTERVAL}s | heartbeat={HEARTBEAT_INTERVAL//60}m")
         check_gh_auth()
+        last_heartbeat = 0.0
         while True:
             try:
                 n = process_all()
@@ -554,6 +558,10 @@ def main():
                 break
             except Exception as e:
                 log.error(f"Poll error: {e}", exc_info=True)
+            now = time.monotonic()
+            if now - last_heartbeat >= HEARTBEAT_INTERVAL:
+                post_heartbeat()
+                last_heartbeat = now
             time.sleep(POLL_INTERVAL)
     else:
         # One-shot mode (cron / CI)
