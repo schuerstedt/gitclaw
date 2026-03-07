@@ -470,6 +470,27 @@ def check_gh_auth() -> bool:
     return True
 
 
+# ─── Heartbeat ────────────────────────────────────────────────────────────────
+
+def post_heartbeat():
+    """Post a liveness heartbeat comment to the designated GitHub issue."""
+    issue_num = os.getenv("SPARK_HEARTBEAT_ISSUE", "")
+    if not issue_num:
+        log.info("SPARK_HEARTBEAT_ISSUE not set — skipping heartbeat")
+        return
+
+    agent = detect_agent()
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    body = (
+        f"⚡ **Spark alive** | node: `{NODE}` | agent: `{agent or 'none'}` | `{ts}`"
+    )
+    try:
+        github_comment(int(issue_num), body)
+        log.info(f"💓 Heartbeat posted to #{issue_num}")
+    except Exception as e:
+        log.error(f"Heartbeat failed: {e}")
+
+
 def main():
     import argparse
 
@@ -477,6 +498,7 @@ def main():
     parser.add_argument("--daemon", action="store_true", help="Run as poll daemon")
     parser.add_argument("--issue", type=int, help="Process a specific GitHub issue number")
     parser.add_argument("--detect", action="store_true", help="Detect available agents and exit")
+    parser.add_argument("--heartbeat", action="store_true", help="Post liveness heartbeat to SPARK_HEARTBEAT_ISSUE")
     args = parser.parse_args()
 
     log.info(f"⚡ Spark starting | node={NODE} | repo={REPO}")
@@ -486,6 +508,11 @@ def main():
         print(f"Agent: {agent or 'none found'}")
         print(f"Watched labels: {WATCH_LABELS}")
         print(f"Gitea: {'configured' if GITEA_TOKEN else 'not configured'}")
+        return
+
+    if args.heartbeat:
+        check_gh_auth()
+        post_heartbeat()
         return
 
     # Bootstrap labels
