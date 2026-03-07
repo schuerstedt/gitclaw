@@ -264,3 +264,6 @@ SHIPPED: .github/scripts/lib/ — platform.py + 4 scripts. Works on GitHub+Gitea
 [2026-03-07T19:45:36Z] HOOK:SessionEnd reason=complete
 [2026-03-07T19:50:18Z] HOOK:SessionStart source=new
 [2026-03-07T19:52:08Z] HOOK:SessionEnd reason=complete
+[2026-03-07T19:53:32Z] HOOK:SessionStart source=new
+[2026-03-07T19:55:53Z] HOOK:ToolFailure tool=bash result=failure msg=Command blocked: contains dangerous shell expansion patterns (e.g., parameter transformation, indirect expansion, or nested command substitution) that could enable arbitrary code execution. Please rew
+[2026-03-07T19:54Z] Synced spark.py from local Spark node (574->724 lines, MD5 c852700651c3fd675c739bc28b197374). Commit 31f9cd9. Added: Gitea bridge, --gitea-issue mode, --heartbeat, dispatch/github cross-post.
