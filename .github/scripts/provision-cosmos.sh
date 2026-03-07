@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-RESOURCE_GROUP="${RESOURCE_GROUP:-crunch-persistent}"
+RESOURCE_GROUP="${RESOURCE_GROUP:-}"
 LOCATION="${LOCATION:-northeurope}"
 COSMOS_ACCOUNT="${COSMOS_ACCOUNT:-crunch-memory}"
 DB_NAME="crunch"
@@ -33,13 +33,28 @@ az login --service-principal \
 az account set --subscription "$SUBSCRIPTION_ID"
 echo "✅ Logged in to Azure"
 
-# Resource group (idempotent)
-EXISTING_RG=$(az group show --name "$RESOURCE_GROUP" --query name -o tsv 2>/dev/null || echo "")
-if [ -z "$EXISTING_RG" ]; then
-  az group create --name "$RESOURCE_GROUP" --location "$LOCATION" --output none
-  echo "✅ Resource group '$RESOURCE_GROUP' created"
+# Resource group — find an existing one or create
+if [ -z "$RESOURCE_GROUP" ]; then
+  echo "🔍 No resource group specified — listing available groups..."
+  FIRST_RG=$(az group list --query "[0].name" -o tsv 2>/dev/null || echo "")
+  if [ -n "$FIRST_RG" ]; then
+    RESOURCE_GROUP="$FIRST_RG"
+    echo "✅ Using existing resource group: '$RESOURCE_GROUP'"
+  else
+    RESOURCE_GROUP="crunch-persistent"
+    echo "⏳ No existing resource groups found — creating '$RESOURCE_GROUP'..."
+    az group create --name "$RESOURCE_GROUP" --location "$LOCATION" --output none
+    echo "✅ Resource group '$RESOURCE_GROUP' created"
+  fi
 else
-  echo "✅ Resource group '$RESOURCE_GROUP' already exists"
+  EXISTING_RG=$(az group show --name "$RESOURCE_GROUP" --query name -o tsv 2>/dev/null || echo "")
+  if [ -z "$EXISTING_RG" ]; then
+    echo "⏳ Creating resource group '$RESOURCE_GROUP'..."
+    az group create --name "$RESOURCE_GROUP" --location "$LOCATION" --output none
+    echo "✅ Resource group '$RESOURCE_GROUP' created"
+  else
+    echo "✅ Resource group '$RESOURCE_GROUP' already exists"
+  fi
 fi
 
 # Cosmos DB account (idempotent — check first to avoid free-tier collision)
