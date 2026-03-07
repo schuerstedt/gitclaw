@@ -3,3 +3,4 @@ node_modules/
 
 # Copilot CLI session state — contains raw tool outputs including env vars/secrets
 state/copilot/.copilot/
+__pycache__/
