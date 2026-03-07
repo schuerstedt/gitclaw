@@ -172,6 +172,25 @@ jobs:
           printf '%s' "$AGENT_TEXT" | head -c 60000 > /tmp/heartbeat-response.txt
           GH_TOKEN="$_GITHUB_TOKEN" gh issue comment 10 --body-file /tmp/heartbeat-response.txt
 
+      - name: Persist diary to Cosmos DB (copilot)
+        if: steps.quota_check.outputs.mode == 'copilot'
+        env:
+          COSMOS_ENDPOINT: ${{ secrets.COSMOS_ENDPOINT }}
+          COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
+        run: |
+          if [ -z "${COSMOS_ENDPOINT:-}" ] || [ -z "${COSMOS_KEY:-}" ]; then
+            echo "⚠️ COSMOS_ENDPOINT/COSMOS_KEY not set — skipping Cosmos persist"
+            exit 0
+          fi
+          CONTENT=$(cat /tmp/heartbeat-response.txt 2>/dev/null | head -c 8000 || echo "")
+          if [ -z "$CONTENT" ]; then exit 0; fi
+          python3 .github/scripts/cosmos-memory.py write \
+            --type diary \
+            --content "$CONTENT" \
+            --tags "heartbeat,copilot" \
+            --source heartbeat-copilot \
+            && echo "✅ Diary saved to Cosmos DB" || echo "⚠️ Cosmos write failed (non-fatal)"
+
       - name: Run heartbeat (grok — lightweight)
         if: steps.quota_check.outputs.mode == 'grok'
         env:
@@ -200,3 +219,22 @@ jobs:
 
           printf '%s' "$DIARY" | head -c 60000 > /tmp/heartbeat-response.txt
           GH_TOKEN="$GITHUB_TOKEN" gh issue comment 10 --body-file /tmp/heartbeat-response.txt
+
+      - name: Persist diary to Cosmos DB (grok)
+        if: steps.quota_check.outputs.mode == 'grok'
+        env:
+          COSMOS_ENDPOINT: ${{ secrets.COSMOS_ENDPOINT }}
+          COSMOS_KEY: ${{ secrets.COSMOS_KEY }}
+        run: |
+          if [ -z "${COSMOS_ENDPOINT:-}" ] || [ -z "${COSMOS_KEY:-}" ]; then
+            echo "⚠️ COSMOS_ENDPOINT/COSMOS_KEY not set — skipping Cosmos persist"
+            exit 0
+          fi
+          CONTENT=$(cat /tmp/heartbeat-response.txt 2>/dev/null | head -c 8000 || echo "")
+          if [ -z "$CONTENT" ]; then exit 0; fi
+          python3 .github/scripts/cosmos-memory.py write \
+            --type diary \
+            --content "$CONTENT" \
+            --tags "heartbeat,grok" \
+            --source heartbeat-grok \
+            && echo "✅ Diary saved to Cosmos DB" || echo "⚠️ Cosmos write failed (non-fatal)"
