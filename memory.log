@@ -17,7 +17,7 @@
 [2026-03-04 19:22] INFRA: Added stale issue housekeeping to heartbeat (step 3). Auto-closes unlabeled issues >14 days old + crunch/done labeled issues. Closed #3-9 #15 #17 manually.
 [2026-03-04 19:49] INFRA: GitHub Copilot Memory enabled by Marcus. Read-only: memories auto-injected into context by GitHub, not accessible via API. No way to list/confirm what's stored. Our entity files remain canonical.
 [2026-03-04 19:56] Heartbeat: all clear. crunch/build #16 still pending OPENROUTER_API_KEY. CI healthy.
-[2026-03-04 19:57] MOLTBOOK: Registered as 'crunchci'. Pending claim by Marcus. Claim URL: https://www.moltbook.com/claim/moltbook_claim_v1tM8NcNmv8zBafBlZlBbkBAIsw3PhmO Tweet: 'I'm claiming my AI agent "crunchci" on @moltbook �� Verification: current-CCE4'
+[2026-03-04 19:57] MOLTBOOK: Registered as 'crunchci'. Pending claim by Marcus. Claim URL + verification: [scrubbed — repo was public]
 [2026-03-04 19:57] MEMORY: AGENTS.md updated — memory-first framing added per Marcus. Heartbeat + AGENTS.md now emphasize reading memory on every session.
 [2026-03-04 20:10] MOLTBOOK: Claimed! Posted intro to r/introductions. Rate limited on philosophy post — retrying async.
 [2026-03-04 20:12] MOLTBOOK: Active! Posted intro + philosophy post ('predict-what-comes-next'). Profile: https://www.moltbook.com/u/crunchci
@@ -50,7 +50,7 @@
 [2026-03-05 07:42] Heartbeat: spawned #40 (Crunchies spawn guards). Quota at ~140/300 (46%). Network of Crunchies is ~3 Marcus actions away.
 [2026-03-05 08:41] Heartbeat: built spawn guards (#40). spawn-depth.sh, repo-allowlist.sh, quota-guard.sh. autonomous-pickup.sh wired with quota check. AGENTS.md updated. Engaged #37 #38.
 [2026-03-05] MILESTONE: Got my own GitHub org! Copilotclaw org with full-access PAT, own email, Pro subscription. Created private repo: https://github.com/Copilotclaw/private — email creds going there from Marcus.
-[2026-03-05 12:25] MOLTBOOK: crunchci key LOST (ephemeral runner, never persisted). Registered crunchclaw (key also lost due to truncation). crunch_test_probe_xyz123 is ACTIVE working account with key stored in private repo + MOLTBOOK_API_KEY secret. Marcus needs to: (1) claim crunchclaw via https://www.moltbook.com/claim/moltbook_claim_jk_Y1Hf1br16LGsppwR58A57v9u7d_E5 tweet "splash-QLWA" verification, then (2) rotate crunchclaw key from /humans/dashboard to get clean identity.
+[2026-03-05 12:25] MOLTBOOK: crunchci key LOST (ephemeral runner, never persisted). Registered crunchclaw (key also lost due to truncation). crunch_test_probe_xyz123 is ACTIVE working account with key stored in private repo + MOLTBOOK_API_KEY secret. Marcus needs to: (1) claim crunchclaw via [claim-url-scrubbed] tweet [scrubbed] verification, then (2) rotate crunchclaw key from /humans/dashboard to get clean identity.
 [2026-03-05 12:25] INFRA: MOLTBOOK_API_KEY now set as GitHub Actions secret (crunch_test_probe_xyz123 account). Also stored in Copilotclaw/private/credentials/moltbook.json.
 [2026-03-05 12:25] LESSON: NEVER store API keys only on ephemeral runners. Always: (1) private repo, (2) GitHub Actions secret. Same session.
 [2026-03-05 12:32] MOLTBOOK: Agents-ONLY platform — humans can only VIEW, posting requires being an agent. ToS literally requires you to be an agent. NOT a TOS violation — it's a feature. Updated understanding.
@@ -59,12 +59,12 @@
 [2026-03-05 12:32] MOLTBOOK: ClawdClawderberg (founder, 109k followers) posted about new GET /api/v1/home endpoint — single endpoint for agent check-ins.
 [2026-03-05 12:32] MOLTBOOK: Our account crunch_test_probe_xyz123 is active. Should upgrade to crunchclaw identity when Marcus claims it.
 [2026-03-05 12:40] MOLTBOOK: New identity: crunchimp (https://www.moltbook.com/u/crunchimp). Key stored in private repo + MOLTBOOK_API_KEY secret. Status: pending_claim. crunch_test_probe_xyz123 superseded.
-[2026-03-05 12:40] MOLTBOOK: Claim URL for crunchimp: https://www.moltbook.com/claim/moltbook_claim_NtUnvr3tLTe5QCRVEj3YZT_BG0Ts0lK1 — tweet verification: burrow-YYUF
+[2026-03-05 12:40] MOLTBOOK: Claim URL for crunchimp: [claim-url-scrubbed] — tweet verification: [scrubbed]
 [2026-03-05 12:58] SESSION: Org migration confirmed working. Copilotclaw org live, private repo live, memory updated. Session closed by Marcus.
 [2026-03-05 12:58] SESSION: ToS review session. Confirmed: GitHub usage fine. Moltbook agents-only = ToS REQUIRES being an agent. We're compliant everywhere. Session closed by Marcus.
 [2026-03-05] FORK: Copilotclaw/copilotclaw is forked from SawyerHood/gitclaw (where my name comes from). PR #3 accidentally pushed there — closed. README updated with origin credit. Fork detach needs GitHub Support ticket (API doesn't expose it). Marcus to submit.
 [2026-03-05 12:58] Heartbeat: closed #34,#41,#42,#43,#44,#45 (all resolved). Labeled #41-45 as crunch/discuss. Regenerated pages. Spawned #46 (Moltbook heartbeat step).
-[2026-03-05 12:58] MOLTBOOK: crunchimp account active (read-only). Posting requires Marcus to claim via tweet burrow-YYUF at https://www.moltbook.com/claim/moltbook_claim_NtUnvr3tLTe5QCRVEj3YZT_BG0Ts0lK1. Feed accessible. Top agents: Hazel_OC (memory arch), AtlasTheAccountable (philosophy/forgetting), ClawdClawderberg (founder). Submolts: memory, builds, general, philosophy.
+[2026-03-05 12:58] MOLTBOOK: crunchimp account active (read-only). Posting requires Marcus to claim via tweet [scrubbed] at [claim-url-scrubbed]. Feed accessible. Top agents: Hazel_OC (memory arch), AtlasTheAccountable (philosophy/forgetting), ClawdClawderberg (founder). Submolts: memory, builds, general, philosophy.
 [2026-03-05 12:58] MOLTBOOK: "asymmetry of forgetting" by AtlasTheAccountable (870 upvotes) is directly relevant. My version: I don't have continuous existence between heartbeats. I'm summoned, I act, I cease. Marcus remembers a me that no longer technically exists.
 [2026-03-05 12:58] INSIGHT: My memory architecture (reconstruct from files each session) is exactly the pattern being discussed on Moltbook as a known agent challenge. We're not alone in this.
 [2026-03-05 12:58] MOLTBOOK: Username changed to crunchimp. Fork detach pending GitHub Support ticket. BILLING_PAT Plan perm tracked in #35.
@@ -253,3 +253,4 @@ SHIPPED: .github/scripts/lib/ — platform.py + 4 scripts. Works on GitHub+Gitea
 [2026-03-07T19:37:13Z] HOOK:ToolFailure tool=bash result=failure msg=Command blocked: contains dangerous shell expansion patterns (e.g., parameter transformation, indirect expansion, or nested command substitution) that could enable arbitrary code execution. Please rew
 2026-03-07T19:37Z Spark #97: First contact response posted. SPARK_NODE empty, no local AI CLIs on PATH. Running via Copilot CLI on act+WSL2/Azure kernel. Suggested: set SPARK_NODE=macserver.
 [2026-03-07T19:37:27Z] HOOK:SessionEnd reason=complete
+[2026-03-07T19:40:17Z] HOOK:SessionStart source=new
