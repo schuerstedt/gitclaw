@@ -277,3 +277,4 @@ SHIPPED: .github/scripts/lib/ — platform.py + 4 scripts. Works on GitHub+Gitea
 [2026-03-07T19:58Z] Merging PR94 assets: skills/ dir + docs + Gitea workflow. spark.py kept at 724-line local version.
 2026-03-07T19:57Z Merged PR #85 (Cosmos DB skill) and PR #94 (Spark: double-post fix, skills, memory, monitor). PR #94 had spark.py conflict resolved by keeping --monitor/--remember/--recall handlers.
 [2026-03-07T20:04:10Z] HOOK:SessionEnd reason=complete
+[2026-03-07T20:06:34Z] HOOK:SessionEnd reason=complete
