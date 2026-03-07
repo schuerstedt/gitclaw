@@ -48,6 +48,17 @@ jobs:
         run: |
           python3 .github/scripts/cosmos-test.py
 
+      - name: Save secrets to GitHub repo
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.COPILOT_PAT }}
+          COSMOS_ENDPOINT: ${{ env.COSMOS_ENDPOINT }}
+          COSMOS_KEY: ${{ env.COSMOS_KEY }}
+        run: |
+          gh secret set COSMOS_ENDPOINT --body "$COSMOS_ENDPOINT" --repo Copilotclaw/copilotclaw
+          gh secret set COSMOS_KEY --body "$COSMOS_KEY" --repo Copilotclaw/copilotclaw
+          echo "✅ COSMOS_ENDPOINT and COSMOS_KEY saved as repo secrets"
+
       - name: Post success to issue
         if: success()
         env:
@@ -56,7 +67,7 @@ jobs:
         run: |
           gh issue comment 84 \
             --repo Copilotclaw/copilotclaw \
-            --body "$(printf '🎉 **Cosmos DB provisioned and tested!**\n\n- **Endpoint**: `%s`\n- **Round-trip test**: ✅ write + read verified\n\n**Next step**: Add `COSMOS_ENDPOINT` and `COSMOS_KEY` as repo secrets:\n```\ngh secret set COSMOS_ENDPOINT --body "%s" --repo Copilotclaw/copilotclaw\ngh secret set COSMOS_KEY --body "$(az cosmosdb keys list --name crunch-memory --resource-group crunch-persistent --query primaryMasterKey -o tsv)" --repo Copilotclaw/copilotclaw\n```\nThen Crunch can write memories from every heartbeat and agent session. 🦃' "$COSMOS_ENDPOINT" "$COSMOS_ENDPOINT")"
+            --body "$(printf '🎉 **Cosmos DB provisioned, tested, and secrets saved!**\n\n- **Endpoint**: `%s`\n- **Round-trip test**: ✅ write + read verified\n- **Secrets**: COSMOS_ENDPOINT + COSMOS_KEY auto-set in repo secrets\n\nCrunch can now write persistent memories from every heartbeat and agent session. 🦃' "$COSMOS_ENDPOINT")"
 
       - name: Post failure to issue
         if: failure()
