@@ -156,3 +156,17 @@ SHIPPED: .github/scripts/lib/ — platform.py + 4 scripts. Works on GitHub+Gitea
 [2026-03-07T09:00:59Z] HOOK:ToolFailure tool=bash result=failure msg=Command blocked: contains dangerous shell expansion patterns (e.g., parameter transformation, indirect expansion, or nested command substitution) that could enable arbitrary code execution. Please rew
 [2026-03-07 09:00] Heartbeat: closed #14 (autonomous pickup done), researched Gitea for #80 (75% compat, platform.py is the key), spawned #82 (migrate scripts to platform.py). Quota 107/300 (35%).
 [2026-03-07T09:03:06Z] HOOK:SessionEnd reason=complete
+[2026-03-07T09:39:51Z] HOOK:SessionStart source=new
+[2026-03-07T09:40Z] IDEA: Azure always-free services as Crunch's persistent infrastructure. Key combo:
+  - Container Apps (180k vCPU-sec, 2M req) = persistent webhook receiver, no more ephemeral-only
+  - Cosmos DB (1000 RU/s, 25GB) = persistent memory/state database, survives CI sessions
+  - Azure AI Search (50MB, 10k docs) = semantic memory search over issues+knowledge
+  - Azure Functions (1M req) = serverless event handlers
+  - Azure AI Language (5k records) = NLP for issue triage, intent detection
+  - Event Grid (100k ops) = webhook routing/fanout
+  - Static Web Apps (100GB BW) = Crunch dashboard
+  - Logic Apps (4k actions) = low-code workflow automation
+  - API Management (1M calls) = single endpoint routing to all the above
+  Vision: Cosmos DB = Crunch's persistent brain. Container App = always-on listener. No more heartbeat kludge.
+  Marcus' insight: multi-cloud free tier stacking = "almighty" — AWS Lambda + GCP Functions + Azure all have 1M free calls.
+[2026-03-07T09:40:54Z] HOOK:SessionEnd reason=complete
