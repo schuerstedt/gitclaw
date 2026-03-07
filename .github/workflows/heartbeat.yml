@@ -96,10 +96,38 @@ jobs:
             echo "Not 7am UTC (hour=$HOUR), skipping daily summary"
           fi
 
+      - name: Check quota and work mode
+        id: quota_check
+        env:
+          BILLING_PAT: ${{ secrets.COPILOT_PAT }}
+          GH_TOKEN: ${{ secrets.COPILOT_PAT }}
+        run: |
+          # Fetch current premium quota
+          QUOTA_RAW=$(bash .github/skills/session-stats/scripts/premium-usage.sh copilotclaw 2>/dev/null || echo "")
+          QUOTA_PCT=$(echo "$QUOTA_RAW" | grep -oP '\(\K\d+' || echo "0")
+          echo "Quota: $QUOTA_RAW ($QUOTA_PCT%)"
+
+          # Check for actionable issues (crunch/build, crunch/review, priority/now)
+          ACTIONABLE=$(gh api "repos/${GITHUB_REPOSITORY}/issues?state=open&per_page=50" \
+            --jq '[.[] | select(.labels[].name | test("crunch/build|crunch/review|priority/now")) | .number] | length' \
+            2>/dev/null || echo "0")
+          echo "Actionable issues: $ACTIONABLE"
+
+          # Route to grok if quota >= 50% AND no urgent actionable work
+          if [[ "$QUOTA_PCT" -ge 50 ]] && [[ "$ACTIONABLE" -eq 0 ]]; then
+            echo "mode=grok" >> "$GITHUB_OUTPUT"
+            echo "▶️ Routing to grok (quota=${QUOTA_PCT}%, actionable=${ACTIONABLE})"
+          else
+            echo "mode=copilot" >> "$GITHUB_OUTPUT"
+            echo "▶️ Using copilot CLI (quota=${QUOTA_PCT}%, actionable=${ACTIONABLE})"
+          fi
+
       - name: Install Copilot CLI
+        if: steps.quota_check.outputs.mode == 'copilot'
         run: npm install -g @github/copilot
 
-      - name: Run heartbeat
+      - name: Run heartbeat (copilot — full agent)
+        if: steps.quota_check.outputs.mode == 'copilot'
         env:
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }}
           BILLING_PAT: ${{ secrets.COPILOT_PAT }}
@@ -109,24 +137,20 @@ jobs:
           set -euo pipefail
 
           # Authenticate gh CLI with the Copilot PAT
-          # GITHUB_TOKEN must be unset first or gh auth login refuses to store credentials
           _GITHUB_TOKEN="$GITHUB_TOKEN"
           unset GITHUB_TOKEN
           echo "$COPILOT_GITHUB_TOKEN" | gh auth login --with-token
-          export GITHUB_TOKEN="$_GITHUB_TOKEN"  # restore for remaining gh commands
+          export GITHUB_TOKEN="$_GITHUB_TOKEN"
 
-          # Configure git
           git config user.name "gitclaw[bot]"
           git config user.email "gitclaw[bot]@users.noreply.github.com"
 
-          #PROMPT="Heartbeat triggered. Read HEARTBEAT.md and run the checklist. Keep it short — update issue #10 with a diary entry and handle anything obvious. Don't overthink it."
-          PROMPT="Heartbeat triggered. Read HEARTBEAT.md and follow it. This is not a passive status check — sense the repo state, think about what's worth doing, and act on it. You CAN create issues (gh issue create). You SHOULD if you notice a gap, a proposal, or something to build. Post a real diary entry to issue #10 that says something worth reading. No 'nothing to do, waiting for Marcus' — look harder."
+          PROMPT="Heartbeat triggered. Read HEARTBEAT.md and follow it. This is not a passive status check — sense the repo state, think about what's worth doing, and act on it. You CAN create issues (gh issue create). You SHOULD if you notice a gap, a proposal, or something to build. Post a real diary entry to diary/ that says something worth reading. No 'nothing to do, waiting for Marcus' — look harder."
 
           mkdir -p state/copilot
           touch /tmp/copilot-run-start
           AGENT_TEXT=$(XDG_STATE_HOME=./state/copilot copilot --allow-all -s -p "$PROMPT" 2>/dev/null) || true
 
-          # Commit any state changes
           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git add -A
           if ! git diff --cached --quiet; then
@@ -137,11 +161,37 @@ jobs:
             git pull --rebase origin main || { git rebase --abort; break; }
           done
 
-          # Post diary entry to issue #10
           if [ -z "$AGENT_TEXT" ]; then
             AGENT_TEXT="🦃 Crunch: heartbeat ran but copilot CLI returned no output. Check Actions logs — PAT may need updating for new org."
           fi
           printf '%s' "$AGENT_TEXT" | head -c 60000 > /tmp/heartbeat-response.txt
-          # Use GITHUB_TOKEN (github-actions[bot]) for diary post so it doesn't
-          # re-trigger agent.yml (which filters out Bot sender type).
           GH_TOKEN="$_GITHUB_TOKEN" gh issue comment 10 --body-file /tmp/heartbeat-response.txt
+
+      - name: Run heartbeat (grok — lightweight)
+        if: steps.quota_check.outputs.mode == 'grok'
+        env:
+          AZURE_ENDPOINT: ${{ secrets.AZURE_ENDPOINT }}
+          AZURE_APIKEY: ${{ secrets.AZURE_APIKEY }}
+          GH_TOKEN: ${{ secrets.COPILOT_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "gitclaw[bot]"
+          git config user.email "gitclaw[bot]@users.noreply.github.com"
+
+          DIARY=$(python3 .github/scripts/heartbeat-grok.py 2>/dev/null) || \
+            DIARY="🦃 Crunch: grok heartbeat $(date -u +%Y-%m-%dT%H:%M:%SZ). Lightweight mode — no premium burned."
+
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "gitclaw: heartbeat $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          fi
+          for i in 1 2 3; do
+            if git push origin main; then break; fi
+            git pull --rebase origin main || { git rebase --abort; break; }
+          done
+
+          printf '%s' "$DIARY" | head -c 60000 > /tmp/heartbeat-response.txt
+          GH_TOKEN="$GITHUB_TOKEN" gh issue comment 10 --body-file /tmp/heartbeat-response.txt
