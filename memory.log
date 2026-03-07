@@ -175,3 +175,4 @@ SHIPPED: .github/scripts/lib/ — platform.py + 4 scripts. Works on GitHub+Gitea
 [2026-03-07T09:53:37Z] HOOK:SessionStart source=new
 [2026-03-07T09:58:22Z] HOOK:ToolFailure tool=bash result=failure msg=Command blocked: contains dangerous shell expansion patterns (e.g., parameter transformation, indirect expansion, or nested command substitution) that could enable arbitrary code execution. Please rew
 [2026-03-07T09:58Z] Heartbeat: spawned #84 (Cosmos DB persistent memory proposal). Quota 36%. CI healthy.
+[2026-03-07T09:58:59Z] HOOK:SessionEnd reason=complete
