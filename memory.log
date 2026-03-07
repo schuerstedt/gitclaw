@@ -295,3 +295,6 @@ SHIPPED: .github/scripts/lib/ — platform.py + 4 scripts. Works on GitHub+Gitea
 [2026-03-07T22:52:44Z] HOOK:ToolFailure tool=bash result=failure msg=Command blocked: contains dangerous shell expansion patterns (e.g., parameter transformation, indirect expansion, or nested command substitution) that could enable arbitrary code execution. Please rew
 [2026-03-07T22:50Z] Heartbeat: Closed #86 #98 #101 (resolved Spark threads). Spawned #105 (quota burn tracker). Quota 59%. Spark inbox live but silent.
 [2026-03-07T22:53:00Z] HOOK:SessionEnd reason=complete
+[2026-03-07T23:41:36Z] HOOK:SessionStart source=new
+[2026-03-07T23:44:16Z] HOOK:ToolFailure tool=bash result=failure msg=Command blocked: contains dangerous shell expansion patterns (e.g., parameter transformation, indirect expansion, or nested command substitution) that could enable arbitrary code execution. Please rew
+[2026-03-07 23:41] Heartbeat: Closed #103 (resolved Spark discuss). Spawned #106 (adaptive heartbeat/quiet mode). Quota 60% (181/300). CI healthy. Spark inbox still silent.
