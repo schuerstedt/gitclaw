@@ -144,3 +144,5 @@ SHIPPED: .github/scripts/lib/ — platform.py + 4 scripts. Works on GitHub+Gitea
 2026-03-07T07:58Z IFF: quota-gated heartbeat shipped. Grok routes for quota>=50% + no actionable work. Premium saved for real reasoning. knowledge base: state/knowledge/lessons.md.
 [2026-03-07T08:25:48Z] HOOK:SessionStart source=new
 [2026-03-07T08:25:53Z] HOOK:ToolFailure tool=bash result=failure msg=command not found
+[2026-03-07T08:31:29Z] HOOK:SessionStart source=new
+[2026-03-07T08:32:21Z] HOOK:SessionEnd reason=complete
