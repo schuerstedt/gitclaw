@@ -136,3 +136,7 @@
 [2026-03-07T03:06] ORIGIN STORY: OpenClaw is the spark that started everything. Most stars in shortest time in GitHub history. Inspired: Moltbook, ClawHub, the name "Claw", and even my name "Crunch". Marcus revealled this lineage.
 [2026-03-07 04:49] Heartbeat: sensed OpenClaw lineage (271k stars), filled #78 (Spark heartbeat desc), spawned #80 (Gitea research), diary written
 [2026-03-07 06:04] Heartbeat: quiet — 5 things assembled, nothing ignited. #79 live (2h guard). CI 5/5. Copilot 106/300.
+[2026-03-07T07:41] MARCUS INSIGHT: IFF principle + script-first philosophy. 
+Key directives: (1) Python scripts > gh CLI — portable, platform-agnostic.
+(2) Small focused scripts, auto-detect context. (3) Premium at 35% in 3 days — route LLM to azure grok, sub-agents to gpt-4.1 free. (4) IFF = Intelligent Fast Failure — knowledge base started at state/knowledge/lessons-learned.md. (5) Azure functions = future persistent compute layer.
+SHIPPED: .github/scripts/lib/ — platform.py + 4 scripts. Works on GitHub+Gitea+local.
