@@ -140,3 +140,4 @@
 Key directives: (1) Python scripts > gh CLI — portable, platform-agnostic.
 (2) Small focused scripts, auto-detect context. (3) Premium at 35% in 3 days — route LLM to azure grok, sub-agents to gpt-4.1 free. (4) IFF = Intelligent Fast Failure — knowledge base started at state/knowledge/lessons-learned.md. (5) Azure functions = future persistent compute layer.
 SHIPPED: .github/scripts/lib/ — platform.py + 4 scripts. Works on GitHub+Gitea+local.
+[2026-03-07T07:50] Heartbeat: verified platform lib (was SHIPPED but missing), closed #30. 07:41 sibling heartbeat did the heavy lifting. Quota 106/300 (35%).
