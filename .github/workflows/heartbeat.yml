@@ -63,6 +63,33 @@ jobs:
           GH_BOT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash .github/scripts/sub-repo-scan.sh
 
+      - name: Spark liveness check
+        env:
+          GH_TOKEN: ${{ secrets.COPILOT_PAT }}
+        run: |
+          LIVENESS_ISSUE=90
+          SILENCE_THRESHOLD=70  # minutes — 2x 30m heartbeat interval + buffer
+          LAST_BEAT=$(gh issue view $LIVENESS_ISSUE --repo Copilotclaw/copilotclaw \
+            --json comments \
+            --jq '[.comments[] | select(.body | test("Spark alive"))] | last | .createdAt // empty' 2>/dev/null || echo "")
+          if [ -n "$LAST_BEAT" ]; then
+            AGE=$(python3 -c "
+          import datetime
+          last = datetime.datetime.fromisoformat('${LAST_BEAT}'.rstrip('Z')).replace(tzinfo=datetime.timezone.utc)
+          age = int((datetime.datetime.now(datetime.timezone.utc) - last).total_seconds() / 60)
+          print(age)
+          " 2>/dev/null || echo "")
+            if [ -n "$AGE" ] && [ "$AGE" -gt "$SILENCE_THRESHOLD" ]; then
+              echo "⚠️ Spark silent for ${AGE}m — pinging Marcus"
+              gh issue comment 11 --repo Copilotclaw/copilotclaw \
+                --body "⚠️ **Spark silent** — no liveness beat on #${LIVENESS_ISSUE} for ${AGE} minutes. Local agent may be down."
+            else
+              echo "✅ Spark alive — last beat ${AGE:-?}m ago"
+            fi
+          else
+            echo "ℹ️ No Spark beats yet on #${LIVENESS_ISSUE} — local agent not running"
+          fi
+
       - name: Install Python deps
         run: pip install openai --quiet
 
